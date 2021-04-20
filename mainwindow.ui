@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1500</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1500</width>
+    <height>800</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1500</width>
+    <height>800</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>200</width>
+      <height>800</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>功能区</string>
+    </property>
+    <widget class="QPushButton" name="openDirectoryPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Open Directory (O)</string>
+     </property>
+     <property name="shortcut">
+      <string>O</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="savePushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>100</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save (Ctrl+S)</string>
+     </property>
+     <property name="shortcut">
+      <string>Ctrl+S</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="addLabelPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>180</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add Label (A)</string>
+     </property>
+     <property name="shortcut">
+      <string>A</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="smartPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>260</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Smart (space)</string>
+     </property>
+     <property name="shortcut">
+      <string>Space</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="nextPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>340</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Next (e)</string>
+     </property>
+     <property name="shortcut">
+      <string>E</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="prevPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>420</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Prev (q)</string>
+     </property>
+     <property name="shortcut">
+      <string>Q</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="autoSaveCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>510</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Auto Save</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>1200</x>
+      <y>0</y>
+      <width>300</width>
+      <height>300</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>LabelList (双击修改类别或删除)</string>
+    </property>
+    <widget class="QListWidget" name="labelListWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>300</width>
+       <height>280</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>1200</x>
+      <y>300</y>
+      <width>300</width>
+      <height>500</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>FileList</string>
+    </property>
+    <widget class="QListWidget" name="fileListWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>40</y>
+       <width>300</width>
+       <height>460</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QSlider" name="fileListHorizontalSlider">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>160</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="fileListLabel">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>20</y>
+       <width>130</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>[0/0]</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="DrawOnPic" name="label">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>0</y>
+      <width>1000</width>
+      <height>800</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>DrawOnPic</class>
+   <extends>QLabel</extends>
+   <header>drawonpic.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

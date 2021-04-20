@@ -1,0 +1,10 @@
+# Qt Creator
+LabelRoboMaster.pro.user
+
+# clion
+.idea
+cmake-build-*
+
+# vscode
+.vscode
+build
