@@ -95,6 +95,7 @@ void MainWindow::on_prevPushButton_clicked() {
 }
 
 void MainWindow::on_fileListHorizontalSlider_valueChanged(int value) {
+//    printf("on_fileListHorizontalSlider_valueChanged\n");
     QString text;
     ui->fileListLabel->setText(text.sprintf("[%d/%d]", value, ui->fileListHorizontalSlider->maximum()));
     ui->fileListWidget->setCurrentItem(ui->fileListWidget->item(value - 1));

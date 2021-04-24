@@ -39,12 +39,19 @@ void DrawOnPic::mousePressEvent(QMouseEvent *event) {
         switch (mode) {
             case NORMAL_MODE:
                 draging = checkPoint();
+                for (int i = 0; i < current_label.size(); ++i)
+                    for (int j = 0; j < 4; ++j)
+                        if (*draging == current_label[i].pts[j]) {
+                            focus_box_index = i;
+                            break;
+                        }
                 break;
             case ADDING_MODE:
                 break;
             default:
                 break;
         }
+        update();
     } else if (event->button() == Qt::RightButton) {
         setNormalMode();
     }
@@ -57,7 +64,7 @@ void DrawOnPic::mouseMoveEvent(QMouseEvent *event) {
         case NORMAL_MODE:
             if (draging) {
                 *draging = event->pos();
-                //std::cout << "draging: [" << draging->x() << ", " << draging->y() << "]" << std::endl;
+                // std::cout << "draging: [" << draging->x() << ", " << draging->y() << "]" << std::endl;
             }
             update();
             break;
@@ -136,6 +143,43 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
     //
     for (int i = 0; i < current_label.size(); i++) {
         const auto &box = current_label[i];
+        double delta_x1, delta_y1, delta_x2, delta_y2, proportion;
+        delta_x1 = (box.pts[0].x()-box.pts[1].x()) / 2;
+        delta_y1 = (box.pts[0].y()-box.pts[1].y()) / 2;
+        delta_x2 = (box.pts[2].x()-box.pts[3].x()) / 2;
+        delta_y2 = (box.pts[2].y()-box.pts[3].y()) / 2;
+        switch (box.tag_id%7) {
+        case 0:
+            proportion = 324./660.;
+            break;
+        case 1:
+            proportion = 323./660.;
+            break;
+        case 2:
+            proportion = 364./725.;
+            break;
+        case 3:
+            proportion = 361./725.;
+            break;
+        case 4:
+            proportion = 363./725.;
+            break;
+        case 5:
+            proportion = 359./725.;
+            break;
+        case 6:
+            proportion = 321./725.;
+            break;
+        }
+        QPointF p1((box.pts[0].x()+box.pts[1].x())/2+delta_x1/proportion, (box.pts[0].y()+box.pts[1].y())/2+delta_y1/proportion);
+        QPointF p2((box.pts[0].x()+box.pts[1].x())/2-delta_x1/proportion, (box.pts[0].y()+box.pts[1].y())/2-delta_y1/proportion);
+        QPointF p3((box.pts[2].x()+box.pts[3].x())/2+delta_x2/proportion, (box.pts[2].y()+box.pts[3].y())/2+delta_y2/proportion);
+        QPointF p4((box.pts[2].x()+box.pts[3].x())/2-delta_x2/proportion, (box.pts[2].y()+box.pts[3].y())/2-delta_y2/proportion);
+        box_t new_box;
+        new_box.pts[0] = p1;
+        new_box.pts[1] = p2;
+        new_box.pts[2] = p3;
+        new_box.pts[3] = p4;
         QTransform transform;
         painter.setTransform(transform);
         if (i == focus_box_index) {
@@ -143,7 +187,7 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         } else {
             painter.setPen(pen_line);
         }
-        painter.drawPolygon(box.pts, 4);
+        painter.drawPolygon(new_box.pts, 4);
         if (i == focus_box_index) {
             painter.setPen(pen_point_focus);
         } else {
@@ -162,10 +206,11 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         painter_ploygon.append({geometry().width(), 0});
 //        QPolygonF std_tag_ploygon = box.getStandardPloygon();
         QPolygonF man_tag_ploygon;
-        man_tag_ploygon.append(box.pts[0]);
-        man_tag_ploygon.append(box.pts[1]);
-        man_tag_ploygon.append(box.pts[2]);
-        man_tag_ploygon.append(box.pts[3]);
+
+        man_tag_ploygon.append(p1);
+        man_tag_ploygon.append(p2);
+        man_tag_ploygon.append(p3);
+        man_tag_ploygon.append(p4);
 
         if (QTransform::quadToQuad(painter_ploygon, man_tag_ploygon, transform)) {
             painter.setTransform(transform);
