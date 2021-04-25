@@ -39,12 +39,16 @@ void DrawOnPic::mousePressEvent(QMouseEvent *event) {
         switch (mode) {
             case NORMAL_MODE:
                 draging = checkPoint();
-                for (int i = 0; i < current_label.size(); ++i)
-                    for (int j = 0; j < 4; ++j)
-                        if (*draging == current_label[i].pts[j]) {
-                            focus_box_index = i;
-                            break;
+                if (draging) {
+                    for (int i = 0; i < current_label.size(); ++i) {
+                        for (int j = 0; j < 4; ++j) {
+                            if (draging == current_label[i].pts + j) {
+                                focus_box_index = i;
+                                break;
+                            }
                         }
+                    }
+                }
                 break;
             case ADDING_MODE:
                 break;
@@ -144,37 +148,41 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
     for (int i = 0; i < current_label.size(); i++) {
         const auto &box = current_label[i];
         double delta_x1, delta_y1, delta_x2, delta_y2, proportion;
-        delta_x1 = (box.pts[0].x()-box.pts[1].x()) / 2;
-        delta_y1 = (box.pts[0].y()-box.pts[1].y()) / 2;
-        delta_x2 = (box.pts[2].x()-box.pts[3].x()) / 2;
-        delta_y2 = (box.pts[2].y()-box.pts[3].y()) / 2;
-        switch (box.tag_id%7) {
-        case 0:
-            proportion = 324./660.;
-            break;
-        case 1:
-            proportion = 323./660.;
-            break;
-        case 2:
-            proportion = 364./725.;
-            break;
-        case 3:
-            proportion = 361./725.;
-            break;
-        case 4:
-            proportion = 363./725.;
-            break;
-        case 5:
-            proportion = 359./725.;
-            break;
-        case 6:
-            proportion = 321./725.;
-            break;
+        delta_x1 = (box.pts[0].x() - box.pts[1].x()) / 2;
+        delta_y1 = (box.pts[0].y() - box.pts[1].y()) / 2;
+        delta_x2 = (box.pts[2].x() - box.pts[3].x()) / 2;
+        delta_y2 = (box.pts[2].y() - box.pts[3].y()) / 2;
+        switch (box.tag_id % 7) {
+            case 0:
+                proportion = 324. / 660.;
+                break;
+            case 1:
+                proportion = 323. / 660.;
+                break;
+            case 2:
+                proportion = 364. / 725.;
+                break;
+            case 3:
+                proportion = 361. / 725.;
+                break;
+            case 4:
+                proportion = 363. / 725.;
+                break;
+            case 5:
+                proportion = 359. / 725.;
+                break;
+            case 6:
+                proportion = 321. / 725.;
+                break;
         }
-        QPointF p1((box.pts[0].x()+box.pts[1].x())/2+delta_x1/proportion, (box.pts[0].y()+box.pts[1].y())/2+delta_y1/proportion);
-        QPointF p2((box.pts[0].x()+box.pts[1].x())/2-delta_x1/proportion, (box.pts[0].y()+box.pts[1].y())/2-delta_y1/proportion);
-        QPointF p3((box.pts[2].x()+box.pts[3].x())/2+delta_x2/proportion, (box.pts[2].y()+box.pts[3].y())/2+delta_y2/proportion);
-        QPointF p4((box.pts[2].x()+box.pts[3].x())/2-delta_x2/proportion, (box.pts[2].y()+box.pts[3].y())/2-delta_y2/proportion);
+        QPointF p1((box.pts[0].x() + box.pts[1].x()) / 2 + delta_x1 / proportion,
+                   (box.pts[0].y() + box.pts[1].y()) / 2 + delta_y1 / proportion);
+        QPointF p2((box.pts[0].x() + box.pts[1].x()) / 2 - delta_x1 / proportion,
+                   (box.pts[0].y() + box.pts[1].y()) / 2 - delta_y1 / proportion);
+        QPointF p3((box.pts[2].x() + box.pts[3].x()) / 2 + delta_x2 / proportion,
+                   (box.pts[2].y() + box.pts[3].y()) / 2 + delta_y2 / proportion);
+        QPointF p4((box.pts[2].x() + box.pts[3].x()) / 2 - delta_x2 / proportion,
+                   (box.pts[2].y() + box.pts[3].y()) / 2 - delta_y2 / proportion);
         box_t new_box;
         new_box.pts[0] = p1;
         new_box.pts[1] = p2;

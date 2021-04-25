@@ -14,7 +14,7 @@ include_directories(.)
 
 aux_source_directory(. src)
 
-add_executable(${PROJECT_NAME} ${src} tags.qrc)
+add_executable(${PROJECT_NAME} ${src} resource.qrc)
 
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})

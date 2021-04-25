@@ -39,4 +39,4 @@ FORMS += \
     labeldialog.ui
 
 RESOURCES += \
-    tags.qrc
+    resource.qrc
