@@ -72,6 +72,11 @@ void MainWindow::on_labelListWidget_currentItemChanged(QListWidgetItem *current,
     ui->label->setFocusBox(idx);
 }
 
+void MainWindow::on_smartPushButton_clicked() {
+    ui->label->smart();
+
+}
+
 void MainWindow::on_nextPushButton_clicked() {
     if (ui->autoSaveCheckBox->checkState() == Qt::Checked) {
         ui->label->saveLabel();

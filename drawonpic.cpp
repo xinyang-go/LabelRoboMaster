@@ -5,7 +5,7 @@
 #include <QTransform>
 #include <iostream>
 
-DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent) {
+DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     pen_point_focus.setWidth(4);
     pen_point_focus.setColor(Qt::red);
 
@@ -275,6 +275,22 @@ void DrawOnPic::setFocusBox(int index) {
 void DrawOnPic::removeBox(QVector<box_t>::iterator box_iter) {
     current_label.erase(box_iter);
     emit labelChanged(current_label);
+}
+
+void DrawOnPic::smart() {
+    if (current_file.isEmpty()) return;
+    model.run(current_file, current_label);
+    for(auto &label : current_label){
+        label.pts[0].rx() = label.pts[0].x() * ratio + dx;
+        label.pts[1].rx() = label.pts[1].x() * ratio + dx;
+        label.pts[2].rx() = label.pts[2].x() * ratio + dx;
+        label.pts[3].rx() = label.pts[3].x() * ratio + dx;
+        label.pts[0].ry() = label.pts[0].y() * ratio + dy;
+        label.pts[1].ry() = label.pts[1].y() * ratio + dy;
+        label.pts[2].ry() = label.pts[2].y() * ratio + dy;
+        label.pts[3].ry() = label.pts[3].y() * ratio + dy;
+    }
+    updateBox();
 }
 
 QVector<box_t> &DrawOnPic::get_current_label() {

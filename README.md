@@ -1,6 +1,6 @@
 # RoboMaster智能数据集标注工具
 
-基于[**Qt5+OpenCV**]，用于标注RoboMaster装甲板4个顶点的位置，灯条颜色，以及贴纸类型。
+基于[**Qt5+OpenCV(with OpenVINO)**]，用于标注RoboMaster装甲板4个顶点的位置，灯条颜色，以及贴纸类型。
 
 ## 项目介绍
 
@@ -14,8 +14,10 @@
 
 * 将标准装甲板贴纸图像叠加到图片上，便于观察选取结果。
 * 选点时局部放大，便于观察选点位置。
-* 智能预识别，减轻人力。(TODO)
+* 智能预识别，减轻人力。(需要带OpenVINO支持的OpenCV)
 * 图像的缩放与拖动。(TODO)
+
+TODO：目前智能预识别模型不正常识别基地贴纸，且大目标识别效果较差。有待进一步更新。
 
 ## 程序界面图
 
@@ -23,7 +25,7 @@
 
 ## 编译运行
 
-支持使用cmake和qmake进行编译。推荐使用cmake。
+支持使用cmake进行编译。
 
 cmake编译方法:
 
@@ -34,19 +36,12 @@ cmake ..
 make
 ```
 
-qmake编译方法:
-
-```shell
-mkdir build
-cd build
-qmake ..
-make
-```
+OpenCV With OpenVINO的安装方法：[官网链接](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/download.html)，安装OpenVINO SDK包，其中自带OpenCV With OpenVINO。
 
 ## 使用方法
 
 * 首先选择图片文件夹目录，程序会自动查找目录下所有图片文件。(jpg、jpeg、png)
-* 点击smart自动预标注当前图片（TODO）。点击Add Label开始标注一个装甲板。
+* 点击smart自动预标注当前图片。或点击Add Label开始标注一个装甲板。
 * 按照装甲板**左侧灯条上端、左侧灯条下端、右侧灯条下端、右侧灯条上端**的顺序，依次点击。
 * 双击右上方的当前目标项，选择当前目标的类别。
 * 根据需求，微调4个点的位置，使得叠加的标准装甲板边缘和实际图像中的装甲板边缘对齐。（标准装甲板边缘默认图像没有畸变，追求标注精度的话，需要对数据集中的图片进行去畸变）。

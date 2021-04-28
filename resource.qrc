@@ -8,4 +8,9 @@
         <file>resource/2.svg</file>
         <file>resource/1.svg</file>
     </qresource>
+
+    <qresource prefix="/nn">
+        <file>resource/model-opt.xml</file>
+        <file>resource/model-opt.bin</file>
+    </qresource>
 </RCC>

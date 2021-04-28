@@ -18,3 +18,6 @@ add_executable(${PROJECT_NAME} ${src} resource.qrc)
 
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
+
+find_package(OpenCV 4 REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})

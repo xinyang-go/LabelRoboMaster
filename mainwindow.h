@@ -30,6 +30,8 @@ private slots:
 
     void on_labelListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
+    void on_smartPushButton_clicked();
+
     void on_nextPushButton_clicked();
 
     void on_prevPushButton_clicked();
