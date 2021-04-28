@@ -211,7 +211,7 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         painter_ploygon.append({0., 0.});
         painter_ploygon.append({0., (double)geometry().height()});
         painter_ploygon.append({(double)geometry().width(), (double)geometry().height()});
-        painter_ploygon.append({(double)geometry().width(), 0});
+        painter_ploygon.append({(double)geometry().width(), 0.});
 //        QPolygonF std_tag_ploygon = box.getStandardPloygon();
         QPolygonF man_tag_ploygon;
 
