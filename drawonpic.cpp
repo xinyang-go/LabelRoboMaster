@@ -208,10 +208,10 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         QSvgRenderer &tag_render = standard_tag_render[box.tag_id];
 
         QPolygonF painter_ploygon;
-        painter_ploygon.append({0, 0});
-        painter_ploygon.append({0, geometry().height()});
-        painter_ploygon.append({geometry().width(), geometry().height()});
-        painter_ploygon.append({geometry().width(), 0});
+        painter_ploygon.append({0., 0.});
+        painter_ploygon.append({0., (double)geometry().height()});
+        painter_ploygon.append({(double)geometry().width(), (double)geometry().height()});
+        painter_ploygon.append({(double)geometry().width(), 0});
 //        QPolygonF std_tag_ploygon = box.getStandardPloygon();
         QPolygonF man_tag_ploygon;
 
