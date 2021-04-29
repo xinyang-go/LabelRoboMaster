@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QTransform>
 #include <iostream>
+#include <fstream>
 
 DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     pen_point_focus.setWidth(4);
@@ -325,10 +326,11 @@ void DrawOnPic::loadLabel() {
         QFile fp(label_file.absoluteFilePath());
         if (fp.open(QIODevice::ReadOnly)) {
             QTextStream stream(&fp);
-            while (!fp.atEnd()) {
+            while (true) {
                 box_t label;
                 int idx;
                 stream >> idx;
+                if(stream.atEnd()) break;
                 label.color_id = idx / 7;
                 label.tag_id = idx % 7;
                 stream >> label.pts[0].rx() >> label.pts[0].ry()
@@ -351,10 +353,13 @@ void DrawOnPic::loadLabel() {
 }
 
 void DrawOnPic::saveLabel() {
-    if (current_label.empty()) return;
     QFileInfo image_file = current_file;
     QFileInfo label_file = image_file.absoluteFilePath().replace(image_file.completeSuffix(), "txt");
     QFile fp(label_file.absoluteFilePath());
+    if (current_label.empty()) {
+        fp.remove();
+        return;
+    }
     if (fp.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
         QTextStream stream(&fp);
         for (const box_t &box: current_label) {
