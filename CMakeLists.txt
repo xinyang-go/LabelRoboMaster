@@ -10,14 +10,15 @@ set(QT_VERSION 5)
 set(REQUIRED_LIBS Core Gui Widgets Svg)
 set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Svg)
 
+find_package(Qt${QT_VERSION} 5.15 COMPONENTS ${REQUIRED_LIBS} REQUIRED)
+find_package(OpenCV 4 REQUIRED)
+
 include_directories(.)
 
 aux_source_directory(. src)
 
-add_executable(${PROJECT_NAME} ${src} resource.qrc)
+qt5_add_big_resources(resource resource.qrc)
+add_executable(${PROJECT_NAME} ${src} ${resource})
 
-find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
-
-find_package(OpenCV 4 REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
