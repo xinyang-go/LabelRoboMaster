@@ -3,6 +3,7 @@
 //
 
 #include "model.hpp"
+#include <fstream>
 #include <QFile>
 
 template<class F, class T, class ...Ts>
