@@ -61,43 +61,57 @@ SmartModel::SmartModel() {
     bin_file.open(QIODevice::ReadOnly);
     auto xml_bytes = xml_file.readAll();
     auto bin_bytes = bin_file.readAll();
-    net = cv::dnn::readNetFromModelOptimizer((uint8_t*)xml_bytes.data(), xml_bytes.size(), (uint8_t*)bin_bytes.data(), bin_bytes.size());
+    try {
+        net = cv::dnn::readNetFromModelOptimizer((uint8_t *) xml_bytes.data(), xml_bytes.size(),
+                                                 (uint8_t *) bin_bytes.data(), bin_bytes.size());
+    } catch (cv::Exception &) {
+
+    }
 }
 
-void SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
-    auto img = cv::imread(image_file.toStdString());
-    float scale = 640.f / img.cols;
-    cv::resize(img, img, {-1, -1}, scale, scale);
-    auto x = cv::dnn::blobFromImage(img);
-    net.setInput(x);
-    auto y = net.forward();
-    QVector<box_t> before_nms;
-    for (int i = 0; i < y.size[1]; i++) {
-        float *result = (float *) y.data + i * y.size[2];
-        if (result[8] < inv_sigmoid(0.5)) continue;
-        box_t box;
-        for (int i = 0; i < 4; i++) {
-            box.pts[i].rx() = result[i * 2 + 0];
-            box.pts[i].ry() = result[i * 2 + 1];
+bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
+    try {
+        auto img = cv::imread(image_file.toStdString());
+        float scale = 640.f / img.cols;
+        cv::resize(img, img, {-1, -1}, scale, scale);
+        auto x = cv::dnn::blobFromImage(img);
+        net.setInput(x);
+        auto y = net.forward();
+        QVector<box_t> before_nms;
+        for (int i = 0; i < y.size[1]; i++) {
+            float *result = (float *) y.data + i * y.size[2];
+            if (result[8] < inv_sigmoid(0.5)) continue;
+            box_t box;
+            for (int i = 0; i < 4; i++) {
+                box.pts[i].rx() = result[i * 2 + 0];
+                box.pts[i].ry() = result[i * 2 + 1];
+            }
+            for (auto &pt : box.pts) pt.rx() /= scale, pt.ry() /= scale;
+            box.color_id = argmax(result + 9, 4);
+            box.tag_id = argmax(result + 13, 7);
+            box.conf = sigmoid(result[8]);
+            before_nms.append(box);
         }
-        for (auto &pt : box.pts) pt.rx() /= scale, pt.ry() /= scale;
-        box.color_id = argmax(result + 9, 4);
-        box.tag_id = argmax(result + 13, 7);
-        box.conf = sigmoid(result[8]);
-        before_nms.append(box);
-    }
-    std::sort(boxes.begin(), boxes.end(), [](box_t &b1, box_t &b2) {
-        return b1.conf > b2.conf;
-    });
-    boxes.clear();
-    boxes.reserve(before_nms.size());
-    std::vector<bool> is_removed(before_nms.size());
-    for (int i = 0; i < before_nms.size(); i++) {
-        if (is_removed[i]) continue;
-        boxes.append(before_nms[i]);
-        for (int j = i + 1; j < before_nms.size(); j++) {
-            if (is_removed[j]) continue;
-            if (is_overlap(before_nms[i].pts, before_nms[j].pts)) is_removed[j] = true;
+        std::sort(boxes.begin(), boxes.end(), [](box_t &b1, box_t &b2) {
+            return b1.conf > b2.conf;
+        });
+        boxes.clear();
+        boxes.reserve(before_nms.size());
+        std::vector<bool> is_removed(before_nms.size());
+        for (int i = 0; i < before_nms.size(); i++) {
+            if (is_removed[i]) continue;
+            boxes.append(before_nms[i]);
+            for (int j = i + 1; j < before_nms.size(); j++) {
+                if (is_removed[j]) continue;
+                if (is_overlap(before_nms[i].pts, before_nms[j].pts)) is_removed[j] = true;
+            }
         }
+        return true;
+    } catch (std::exception &e) {
+        std::ofstream ofs("warning.txt", std::ios::app);
+        time_t t;
+        time(&t);
+        ofs << asctime(localtime(&t)) << "\t" << e.what() << std::endl;
+        return false;
     }
 }

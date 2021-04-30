@@ -57,7 +57,7 @@ class SmartModel {
 public:
     explicit SmartModel();
 
-    void run(const QString &image_file, QVector<box_t> &boxes);
+    bool run(const QString &image_file, QVector<box_t> &boxes);
 
 private:
     cv::dnn::Net net;

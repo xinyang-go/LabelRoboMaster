@@ -210,9 +210,9 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
 
         QPolygonF painter_ploygon;
         painter_ploygon.append({0., 0.});
-        painter_ploygon.append({0., (double)geometry().height()});
-        painter_ploygon.append({(double)geometry().width(), (double)geometry().height()});
-        painter_ploygon.append({(double)geometry().width(), 0.});
+        painter_ploygon.append({0., (double) geometry().height()});
+        painter_ploygon.append({(double) geometry().width(), (double) geometry().height()});
+        painter_ploygon.append({(double) geometry().width(), 0.});
 //        QPolygonF std_tag_ploygon = box.getStandardPloygon();
         QPolygonF man_tag_ploygon;
 
@@ -280,8 +280,14 @@ void DrawOnPic::removeBox(QVector<box_t>::iterator box_iter) {
 
 void DrawOnPic::smart() {
     if (current_file.isEmpty()) return;
-    model.run(current_file, current_label);
-    for(auto &label : current_label){
+    if (!model.run(current_file, current_label)) {
+        QMessageBox::warning(nullptr, "warning", "Cannot run smart!\n"
+                                                 "This maybe due to compiling without openvino or a broken model file.\n"
+                                                 "See warning.txt for detailed information.",
+                             QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        return;
+    }
+    for (auto &label : current_label) {
         label.pts[0].rx() = label.pts[0].x() * ratio + dx;
         label.pts[1].rx() = label.pts[1].x() * ratio + dx;
         label.pts[2].rx() = label.pts[2].x() * ratio + dx;
@@ -330,7 +336,7 @@ void DrawOnPic::loadLabel() {
                 box_t label;
                 int idx;
                 stream >> idx;
-                if(stream.atEnd()) break;
+                if (stream.atEnd()) break;
                 label.color_id = idx / 7;
                 label.tag_id = idx % 7;
                 stream >> label.pts[0].rx() >> label.pts[0].ry()
