@@ -38,7 +38,7 @@ cmake ..
 make
 ```
 
-在**Qt5.15**上编译成功，低版本Qt不确定能否正常编译运行。
+在**Qt5.15 & Qt5.12**上编译成功，低版本Qt不确定能否正常编译运行。
 
 OpenCV With OpenVINO的安装方法：[官网链接](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/download.html)，安装OpenVINO SDK包，其中自带OpenCV With OpenVINO。
 
