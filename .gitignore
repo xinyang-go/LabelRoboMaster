@@ -5,3 +5,9 @@ cmake-build-*
 # vscode
 .vscode
 build
+
+# MacOS
+.DS_STORE
+
+# QtCreator
+*.user

@@ -13,4 +13,13 @@
         <file>resource/model-opt.xml</file>
         <file>resource/model-opt.bin</file>
     </qresource>
+
+    <qresource prefix="/icon">
+        <file>resource/add.png</file>
+        <file>resource/auto.png</file>
+        <file>resource/auto-fix.png</file>
+        <file>resource/left-arrow.png</file>
+        <file>resource/right-arrow.png</file>
+        <file>resource/save.png</file>
+    </qresource>
 </RCC>
