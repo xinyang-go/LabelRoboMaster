@@ -21,5 +21,6 @@
         <file>resource/left-arrow.png</file>
         <file>resource/right-arrow.png</file>
         <file>resource/save.png</file>
+        <file>resource/directory.png</file>
     </qresource>
 </RCC>

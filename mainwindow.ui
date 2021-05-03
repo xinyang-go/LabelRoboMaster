@@ -50,6 +50,16 @@
      <property name="text">
       <string>Open Directory (O)</string>
      </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/directory.png</normaloff>:/icon/resource/directory.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
      <property name="shortcut">
       <string>O</string>
      </property>
@@ -65,6 +75,16 @@
      </property>
      <property name="text">
       <string>Save (Ctrl+S)</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/save.png</normaloff>:/icon/resource/save.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
      </property>
      <property name="shortcut">
       <string>Ctrl+S</string>
@@ -82,6 +102,16 @@
      <property name="text">
       <string>Add Label (A)</string>
      </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/add.png</normaloff>:/icon/resource/add.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
      <property name="shortcut">
       <string>A</string>
      </property>
@@ -97,6 +127,16 @@
      </property>
      <property name="text">
       <string>Smart (space)</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/auto-fix.png</normaloff>:/icon/resource/auto-fix.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
      </property>
      <property name="shortcut">
       <string>Space</string>
@@ -114,6 +154,16 @@
      <property name="text">
       <string>Next (e)</string>
      </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/right-arrow.png</normaloff>:/icon/resource/right-arrow.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
      <property name="shortcut">
       <string>E</string>
      </property>
@@ -129,6 +179,16 @@
      </property>
      <property name="text">
       <string>Prev (q)</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/left-arrow.png</normaloff>:/icon/resource/left-arrow.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
      </property>
      <property name="shortcut">
       <string>Q</string>
@@ -256,6 +316,8 @@
    <header>drawonpic.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
