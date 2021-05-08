@@ -73,9 +73,15 @@ SmartModel::SmartModel() {
 bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
     try {
         auto img = cv::imread(image_file.toStdString());
-        float scale = 640.f / img.cols;
+        float scale = 640.f / std::max(img.cols, img.rows);
+        int dw = img.cols * scale;
+        int dh = img.rows * scale;
+        int dx = (640 - dw) / 2;
+        int dy = (640 - dh) / 2;
         cv::resize(img, img, {-1, -1}, scale, scale);
-        auto x = cv::dnn::blobFromImage(img);
+        cv::Mat input(640, 640, CV_8UC3);
+        img.copyTo(input({dx, dy, dw, dh}));
+        auto x = cv::dnn::blobFromImage(input);
         net.setInput(x);
         auto y = net.forward();
         QVector<box_t> before_nms;
@@ -84,10 +90,9 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
             if (result[8] < inv_sigmoid(0.5)) continue;
             box_t box;
             for (int i = 0; i < 4; i++) {
-                box.pts[i].rx() = result[i * 2 + 0];
-                box.pts[i].ry() = result[i * 2 + 1];
+                box.pts[i].rx() = (result[i * 2 + 0] - dx) / scale;
+                box.pts[i].ry() = (result[i * 2 + 1] - dy) / scale;
             }
-            for (auto &pt : box.pts) pt.rx() /= scale, pt.ry() /= scale;
             box.color_id = argmax(result + 9, 4);
             box.tag_id = argmax(result + 13, 7);
             box.conf = sigmoid(result[8]);
