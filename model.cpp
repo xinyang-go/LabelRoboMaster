@@ -74,11 +74,11 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
     try {
         auto img = cv::imread(image_file.toStdString());
         float scale = 640.f / std::max(img.cols, img.rows);
-        int dw = img.cols * scale;
-        int dh = img.rows * scale;
+        cv::resize(img, img, {-1, -1}, scale, scale);
+        int dw = img.cols;
+        int dh = img.rows;
         int dx = (640 - dw) / 2;
         int dy = (640 - dh) / 2;
-        cv::resize(img, img, {-1, -1}, scale, scale);
         cv::Mat input(640, 640, CV_8UC3);
         img.copyTo(input({dx, dy, dw, dh}));
         auto x = cv::dnn::blobFromImage(input);
