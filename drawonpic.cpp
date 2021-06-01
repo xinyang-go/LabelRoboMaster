@@ -334,11 +334,11 @@ void DrawOnPic::loadLabel() {
             QTextStream stream(&fp);
             while (true) {
                 box_t label;
-                int idx;
+                double idx;
                 stream >> idx;
                 if (stream.atEnd()) break;
-                label.color_id = idx / 7;
-                label.tag_id = idx % 7;
+                label.color_id = (int)idx / 7;
+                label.tag_id = (int)idx % 7;
                 stream >> label.pts[0].rx() >> label.pts[0].ry()
                        >> label.pts[1].rx() >> label.pts[1].ry()
                        >> label.pts[2].rx() >> label.pts[2].ry()

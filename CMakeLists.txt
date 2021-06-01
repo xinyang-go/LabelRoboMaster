@@ -11,7 +11,7 @@ set(REQUIRED_LIBS Core Gui Widgets Svg)
 set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Svg)
 
 find_package(Qt${QT_VERSION} 5.12 COMPONENTS ${REQUIRED_LIBS} REQUIRED)
-find_package(OpenCV 4 REQUIRED)
+find_package(OpenCV 4.5 REQUIRED)
 
 include_directories(.)
 

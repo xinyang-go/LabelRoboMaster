@@ -299,11 +299,24 @@
       <x>0</x>
       <y>640</y>
       <width>200</width>
-      <height>160</height>
+      <height>140</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelOpenvino">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>780</y>
+      <width>200</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>openvino: </string>
     </property>
    </widget>
   </widget>

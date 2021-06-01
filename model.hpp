@@ -59,8 +59,11 @@ public:
 
     bool run(const QString &image_file, QVector<box_t> &boxes);
 
+    bool with_openvino() const { return is_openvino; }
+
 private:
     cv::dnn::Net net;
+    bool is_openvino = false;
 };
 
 #endif /* _MODEL_HPP_ */

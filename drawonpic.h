@@ -14,6 +14,8 @@ Q_OBJECT
 public:
     explicit DrawOnPic(QWidget *parent = nullptr);
 
+    bool with_openvino() const { return model.with_openvino(); }
+
 protected:
     void mousePressEvent(QMouseEvent *event);
 

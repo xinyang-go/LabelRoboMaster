@@ -56,17 +56,24 @@ constexpr float sigmoid(float x) {
 
 
 SmartModel::SmartModel() {
-    QFile xml_file(":/nn/resource/model-opt.xml");
-    QFile bin_file(":/nn/resource/model-opt.bin");
-    xml_file.open(QIODevice::ReadOnly);
-    bin_file.open(QIODevice::ReadOnly);
-    auto xml_bytes = xml_file.readAll();
-    auto bin_bytes = bin_file.readAll();
-    try {
-        net = cv::dnn::readNetFromModelOptimizer((uint8_t *) xml_bytes.data(), xml_bytes.size(),
-                                                 (uint8_t *) bin_bytes.data(), bin_bytes.size());
-    } catch (cv::Exception &) {
+    QFile onnx_file(":/nn/resource/model-opt.onnx");
+    onnx_file.open(QIODevice::ReadOnly);
+    auto onnx_bytes = onnx_file.readAll();
 
+    net = cv::dnn::readNetFromONNX(onnx_bytes.data(), onnx_bytes.size());
+
+    try {
+        net.setPreferableBackend(cv::dnn::DNN_BACKEND_INFERENCE_ENGINE);
+        net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+        cv::Mat input(640, 640, CV_8UC3);
+        auto x = cv::dnn::blobFromImage(input) / 255.;
+        net.setInput(x);
+        net.forward();
+        is_openvino = true;
+    } catch (cv::Exception &) {
+        net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
+        net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+        is_openvino = false;
     }
 }
 
@@ -81,7 +88,8 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
         int dy = (640 - dh) / 2;
         cv::Mat input(640, 640, CV_8UC3);
         img.copyTo(input({dx, dy, dw, dh}));
-        auto x = cv::dnn::blobFromImage(input);
+        cv::cvtColor(input, input, cv::COLOR_BGR2RGB);
+        auto x = cv::dnn::blobFromImage(input) / 255;
         net.setInput(x);
         auto y = net.forward();
         QVector<box_t> before_nms;
@@ -98,7 +106,7 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
             box.conf = sigmoid(result[8]);
             before_nms.append(box);
         }
-        std::sort(boxes.begin(), boxes.end(), [](box_t &b1, box_t &b2) {
+        std::sort(before_nms.begin(), before_nms.end(), [](box_t &b1, box_t &b2) {
             return b1.conf > b2.conf;
         });
         boxes.clear();
