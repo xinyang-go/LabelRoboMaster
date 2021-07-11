@@ -70,7 +70,17 @@
    </item>
    <item>
     <property name="text">
-     <string>BB</string>
+     <string>BO</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Bs</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Bb</string>
     </property>
    </item>
    <item>
@@ -105,7 +115,17 @@
    </item>
    <item>
     <property name="text">
-     <string>RB</string>
+     <string>RO</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Rs</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Rb</string>
     </property>
    </item>
    <item>
@@ -140,7 +160,17 @@
    </item>
    <item>
     <property name="text">
-     <string>NB</string>
+     <string>NO</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Ns</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Nb</string>
     </property>
    </item>
    <item>
@@ -175,7 +205,17 @@
    </item>
    <item>
     <property name="text">
-     <string>PB</string>
+     <string>PO</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Ps</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Pb</string>
     </property>
    </item>
   </widget>

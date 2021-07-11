@@ -28,7 +28,9 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     standard_tag_render[3].load(QString(":/pic/tags/resource/3.svg"));
     standard_tag_render[4].load(QString(":/pic/tags/resource/4.svg"));
     standard_tag_render[5].load(QString(":/pic/tags/resource/5.svg"));
-    standard_tag_render[6].load(QString(":/pic/tags/resource/B.svg"));
+    standard_tag_render[6].load(QString(":/pic/tags/resource/5.svg"));
+    standard_tag_render[7].load(QString(":/pic/tags/resource/5.svg"));
+    standard_tag_render[8].load(QString(":/pic/tags/resource/B.svg"));
 
     this->setMouseTracking(true);
 }
@@ -153,7 +155,7 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         delta_y1 = (box.pts[0].y() - box.pts[1].y()) / 2;
         delta_x2 = (box.pts[2].x() - box.pts[3].x()) / 2;
         delta_y2 = (box.pts[2].y() - box.pts[3].y()) / 2;
-        switch (box.tag_id % 7) {
+        switch (box.tag_id % 9) {
             case 0:
                 proportion = 324. / 660.;
                 break;
@@ -173,6 +175,12 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
                 proportion = 359. / 725.;
                 break;
             case 6:
+                proportion = 359. / 725.;
+                break;
+            case 7:
+                proportion = 359. / 725.;
+                break;
+            case 8:
                 proportion = 321. / 725.;
                 break;
         }
@@ -337,8 +345,8 @@ void DrawOnPic::loadLabel() {
                 double idx;
                 stream >> idx;
                 if (stream.atEnd()) break;
-                label.color_id = (int)idx / 7;
-                label.tag_id = (int)idx % 7;
+                label.color_id = (int)idx / 9;
+                label.tag_id = (int)idx % 9;
                 stream >> label.pts[0].rx() >> label.pts[0].ry()
                        >> label.pts[1].rx() >> label.pts[1].ry()
                        >> label.pts[2].rx() >> label.pts[2].ry()
@@ -369,7 +377,7 @@ void DrawOnPic::saveLabel() {
     if (fp.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
         QTextStream stream(&fp);
         for (const box_t &box: current_label) {
-            stream << (box.color_id * 7 + box.tag_id) << " "
+            stream << (box.color_id * 9 + box.tag_id) << " "
                    << (box.pts[0].x() - dx) / ratio / img_w << " " << (box.pts[0].y() - dy) / ratio / img_h << " "
                    << (box.pts[1].x() - dx) / ratio / img_w << " " << (box.pts[1].y() - dy) / ratio / img_h << " "
                    << (box.pts[2].x() - dx) / ratio / img_w << " " << (box.pts[2].y() - dy) / ratio / img_h << " "

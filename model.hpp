@@ -17,7 +17,7 @@ struct box_t {
     float conf = -1;
 
     QString getName() const {
-        static const QString tag2name[] = {"G", "1", "2", "3", "4", "5", "B"};
+        static const QString tag2name[] = {"G", "1", "2", "3", "4", "5", "O", "Bs", "Bb"};
         static const QString color2name[] = {"B", "R", "N", "P"};
         return color2name[color_id] + tag2name[tag_id];
     }
@@ -29,7 +29,9 @@ struct box_t {
                                                     {"3", 3},
                                                     {"4", 4},
                                                     {"5", 5},
-                                                    {"B", 6}};
+                                                    {"O", 6},
+                                                    {"s", 7},
+                                                    {"b", 8}};
         static const QMap<QString, int> name2color = {{"B", 0},
                                                       {"R", 1},
                                                       {"N", 2},
@@ -46,9 +48,9 @@ struct box_t {
     QPolygonF getStandardPloygon() const {
         QPolygonF pts;
         pts.append({0., 0.});
-        pts.append({0., (2 <= tag_id && tag_id <= 5) ? (725.) : (660.)});
-        pts.append({(2 <= tag_id && tag_id <= 5) ? (780.) : (1180.), (2 <= tag_id && tag_id <= 5) ? (725.) : (660.)});
-        pts.append({(2 <= tag_id && tag_id <= 5) ? (780.) : (1180.), 0.});
+        pts.append({0., (2 <= tag_id && tag_id <= 7) ? (725.) : (660.)});
+        pts.append({(2 <= tag_id && tag_id <= 7) ? (780.) : (1180.), (2 <= tag_id && tag_id <= 7) ? (725.) : (660.)});
+        pts.append({(2 <= tag_id && tag_id <= 7) ? (780.) : (1180.), 0.});
         return pts;
     }
 };
