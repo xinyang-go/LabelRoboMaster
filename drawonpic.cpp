@@ -7,14 +7,11 @@
 #include <fstream>
 
 DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
-    pen_point_focus.setWidth(4);
-    pen_point_focus.setColor(Qt::red);
+    pen_point_focus.setWidth(5);
+    pen_point_focus.setColor(Qt::green);
 
-    pen_point.setWidth(4);
+    pen_point.setWidth(5);
     pen_point.setColor(Qt::green);
-
-    pen_line_focus.setWidth(1);
-    pen_line_focus.setColor(Qt::red);
 
     pen_line.setWidth(1);
     pen_line.setColor(Qt::green);
@@ -22,17 +19,45 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     pen_text.setWidth(4);
     pen_text.setColor(Qt::green);
 
+    pen_box.setWidth(2);
+    pen_box.setColor(Qt::green);
+
+    pen_box_focus.setWidth(3);
+    pen_box_focus.setColor(Qt::red);
+
+    // 大装甲svg宽高
+    big_svg_ploygen.append({0., 0.});
+    big_svg_ploygen.append({0., 478.});
+    big_svg_ploygen.append({871., 478.});
+    big_svg_ploygen.append({871., 0.});
+    // 小装甲svg宽高
+    small_svg_ploygen.append({0., 0.});
+    small_svg_ploygen.append({0., 516.});
+    small_svg_ploygen.append({557., 516.});
+    small_svg_ploygen.append({557., 0.});
+    // 大装甲标注点对应在svg图中的4个坐标
+    big_pts.append({11., 141.});
+    big_pts.append({11., 344.});
+    big_pts.append({860., 344.});
+    big_pts.append({860., 141.});
+    // 小装甲标注点对应在svg图中的4个坐标
+    small_pts.append({11., 146.});
+    small_pts.append({11., 371.});
+    small_pts.append({546., 371.});
+    small_pts.append({546., 146.});
+
     standard_tag_render[0].load(QString(":/pic/tags/resource/G.svg"));
     standard_tag_render[1].load(QString(":/pic/tags/resource/1.svg"));
     standard_tag_render[2].load(QString(":/pic/tags/resource/2.svg"));
     standard_tag_render[3].load(QString(":/pic/tags/resource/3.svg"));
     standard_tag_render[4].load(QString(":/pic/tags/resource/4.svg"));
     standard_tag_render[5].load(QString(":/pic/tags/resource/5.svg"));
-    standard_tag_render[6].load(QString(":/pic/tags/resource/5.svg"));
-    standard_tag_render[7].load(QString(":/pic/tags/resource/5.svg"));
-    standard_tag_render[8].load(QString(":/pic/tags/resource/B.svg"));
+    standard_tag_render[6].load(QString(":/pic/tags/resource/O.svg"));
+    standard_tag_render[7].load(QString(":/pic/tags/resource/Bs.svg"));
+    standard_tag_render[8].load(QString(":/pic/tags/resource/Bb.svg"));
 
     this->setMouseTracking(true);
+    this->grabKeyboard();
 }
 
 void DrawOnPic::mousePressEvent(QMouseEvent *event) {
@@ -43,9 +68,9 @@ void DrawOnPic::mousePressEvent(QMouseEvent *event) {
             case NORMAL_MODE:
                 draging = checkPoint();
                 if (draging) {
-                    for (int i = 0; i < current_label.size(); ++i) {
+                    for (int i = 0; i < current_label_of_pic.size(); ++i) {
                         for (int j = 0; j < 4; ++j) {
-                            if (draging == current_label[i].pts + j) {
+                            if (draging == current_label_of_pic[i].pts + j) {
                                 focus_box_index = i;
                                 break;
                             }
@@ -60,6 +85,7 @@ void DrawOnPic::mousePressEvent(QMouseEvent *event) {
         }
         update();
     } else if (event->button() == Qt::RightButton) {
+        right_drag_pos = pos;
         setNormalMode();
     }
 }
@@ -81,6 +107,14 @@ void DrawOnPic::mouseMoveEvent(QMouseEvent *event) {
         default:
             break;
     }
+
+    // 右键拖动
+    if(event->buttons() & Qt::RightButton){
+        dx += pos.rx() - right_drag_pos.rx();
+        dy += pos.ry() - right_drag_pos.ry();
+        right_drag_pos = pos;
+        update_label_of_pic(); // 更新已添加目标的绘图位置
+    }
 }
 
 void DrawOnPic::mouseReleaseEvent(QMouseEvent *event) {
@@ -96,13 +130,18 @@ void DrawOnPic::mouseReleaseEvent(QMouseEvent *event) {
                 adding.append(event->pos());
                 if (adding.size() == 4) {
                     box_t box;
-                    box.pts[0] = adding[0];
-                    box.pts[1] = adding[1];
-                    box.pts[2] = adding[2];
-                    box.pts[3] = adding[3];
-                    current_label.append(box);
+                    box.pts[0].rx() = (adding[0].x() - dx) / ratio;
+                    box.pts[0].ry() = (adding[0].y() - dy) / ratio;
+                    box.pts[1].rx() = (adding[1].x() - dx) / ratio;
+                    box.pts[1].ry() = (adding[1].y() - dy) / ratio;
+                    box.pts[2].rx() = (adding[2].x() - dx) / ratio;
+                    box.pts[2].ry() = (adding[2].y() - dy) / ratio;
+                    box.pts[3].rx() = (adding[3].x() - dx) / ratio;
+                    box.pts[3].ry() = (adding[3].y() - dy) / ratio;
+                    current_label_of_raw.append(box);
+                    update_label_of_pic();
                     setNormalMode();
-                    emit labelChanged(current_label);
+                    emit labelChanged(current_label_of_raw);
                 }
                 update();
                 break;
@@ -112,6 +151,54 @@ void DrawOnPic::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
+void DrawOnPic::mouseDoubleClickEvent(QMouseEvent *event){
+    if(event->button() == Qt::RightButton){
+        // 右键双击恢复默认视图
+        // 偷懒，使用重新加载图像实现上述功能
+        loadImage(); 
+        update_label_of_pic();
+    }
+}
+
+void DrawOnPic::wheelEvent(QWheelEvent* event){
+    constexpr double delta = 0.1;
+    double delta_ratio = ratio * delta;
+    if(event->delta() > 0){ 
+        // 滚轮向上，缩小
+        ratio += delta_ratio;
+        dx -= (event->pos().rx() - dx) * delta;
+        dy -= (event->pos().ry() - dy) * delta;
+        update_label_of_pic();
+        if(im2show && img_raw) *im2show = img_raw->scaled(img_raw->width() * ratio, img_raw->height() * ratio);
+    }else{
+        // 滚轮向下，放大
+        ratio -= delta_ratio;
+        dx += (event->pos().rx() - dx) * delta;
+        dy += (event->pos().ry() - dy) * delta;
+        update_label_of_pic();
+        if(im2show && img_raw) *im2show = img_raw->scaled(img_raw->width() * ratio, img_raw->height() * ratio);
+    }
+}
+
+void DrawOnPic::keyPressEvent(QKeyEvent* event) {
+    switch (event->key())    {
+    case Qt::Key_Escape: // ESC取消选中
+        focus_box_index = -1;
+        update();
+        break;
+    case Qt::Key_Delete: // Delete删除选中
+        if(focus_box_index >= 0){
+            current_label_of_raw.removeAt(focus_box_index);
+            update_label_of_pic();
+            emit labelChanged(current_label_of_raw);
+            update();
+        }
+    default:
+        break;
+    }
+    
+}
+
 void DrawOnPic::paintEvent(QPaintEvent *) {
     QPainter painter(this);
     // 绘制图片
@@ -119,6 +206,7 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         painter.drawImage(QPoint(dx, dy), *im2show);
     }
 
+    // 绘制添加中的目标
     if (!adding.empty()) {
         painter.setPen(pen_line);
         painter.drawPolygon(adding.data(), adding.size());
@@ -126,6 +214,144 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         painter.drawPoints(adding.data(), adding.size());
     }
 
+    // 绘制已添加目标
+    for (int i = 0; i < current_label_of_pic.size(); i++) {
+        const auto &box = current_label_of_pic[i];
+        bool is_big = (box.tag_id == 0 || box.tag_id == 1 || box.tag_id == 8);
+        // 计算svg到绘图坐标系的变换，并绘制svg图
+        QPolygonF painter_ploygen;
+        painter_ploygen.append({0., 0.});
+        painter_ploygen.append({0., (double) geometry().height()});
+        painter_ploygen.append({(double) geometry().width(), (double) geometry().height()});
+        painter_ploygen.append({(double) geometry().width(), 0.});
+        QTransform svg2painter;
+        QTransform::quadToQuad(is_big ? big_svg_ploygen : small_svg_ploygen, painter_ploygen, svg2painter);
+        QPolygonF pts_on_painter = svg2painter.map(is_big ? big_pts : small_pts);
+        QPolygonF pts_for_show;
+        for(auto &pt: box.pts) pts_for_show.append(pt);
+        QTransform transform;
+        QTransform::quadToQuad(pts_on_painter, pts_for_show, transform);
+        painter.setTransform(transform);
+        standard_tag_render[box.tag_id].render(&painter);
+        // 清除变换，确保线段粗细不变
+        painter.setTransform(QTransform());
+        // 绘制目标四边形边框
+        if (i == focus_box_index) {
+            painter.setPen(pen_box_focus);
+        } else {
+            if(box.getName()[0] == 'R'){
+                pen_box.setColor(Qt::red);
+            }else if(box.getName()[0] == 'B'){
+                pen_box.setColor(Qt::blue);
+            }else if(box.getName()[0] == 'P'){
+                pen_box.setColor(Qt::cyan);
+            }else{
+                pen_box.setColor(Qt::green);
+            }
+            painter.setPen(pen_box);
+        }
+        painter.drawPolygon(transform.map(painter_ploygen));
+        // 绘制4个定位点
+        if(i == focus_box_index) painter.setPen(pen_point_focus);
+        else painter.setPen(pen_point);
+        painter.drawPoints(box.pts, 4);
+        
+//         double delta_x1, delta_y1, delta_x2, delta_y2, proportion;
+//         delta_x1 = (box.pts[0].x() - box.pts[1].x()) / 2;
+//         delta_y1 = (box.pts[0].y() - box.pts[1].y()) / 2;
+//         delta_x2 = (box.pts[2].x() - box.pts[3].x()) / 2;
+//         delta_y2 = (box.pts[2].y() - box.pts[3].y()) / 2;
+//         switch (box.tag_id % 9) {
+//             case 0:
+//                 proportion = 324. / 660.;
+//                 break;
+//             case 1:
+//                 proportion = 323. / 660.;
+//                 break;
+//             case 2:
+//                 proportion = 364. / 725.;
+//                 break;
+//             case 3:
+//                 proportion = 361. / 725.;
+//                 break;
+//             case 4:
+//                 proportion = 363. / 725.;
+//                 break;
+//             case 5:
+//                 proportion = 359. / 725.;
+//                 break;
+//             case 6:
+//                 proportion = 359. / 725.;
+//                 break;
+//             case 7:
+//                 proportion = 359. / 725.;
+//                 break;
+//             case 8:
+//                 proportion = 321. / 725.;
+//                 break;
+//         }
+//         QPointF p1((box.pts[0].x() + box.pts[1].x()) / 2 + delta_x1 / proportion,
+//                    (box.pts[0].y() + box.pts[1].y()) / 2 + delta_y1 / proportion);
+//         QPointF p2((box.pts[0].x() + box.pts[1].x()) / 2 - delta_x1 / proportion,
+//                    (box.pts[0].y() + box.pts[1].y()) / 2 - delta_y1 / proportion);
+//         QPointF p3((box.pts[2].x() + box.pts[3].x()) / 2 + delta_x2 / proportion,
+//                    (box.pts[2].y() + box.pts[3].y()) / 2 + delta_y2 / proportion);
+//         QPointF p4((box.pts[2].x() + box.pts[3].x()) / 2 - delta_x2 / proportion,
+//                    (box.pts[2].y() + box.pts[3].y()) / 2 - delta_y2 / proportion);
+//         box_t new_box;
+//         new_box.pts[0] = p1;
+//         new_box.pts[1] = p2;
+//         new_box.pts[2] = p3;
+//         new_box.pts[3] = p4;
+//         QTransform transform;
+//         painter.setTransform(transform);
+//         if (i == focus_box_index) {
+//             painter.setPen(pen_box_focus);
+//         } else {
+//             if(box.getName()[0] == 'R'){
+//                 pen_box.setColor(Qt::red);
+//             }else if(box.getName()[0] == 'B'){
+//                 pen_box.setColor(Qt::blue);
+//             }else if(box.getName()[0] == 'P'){
+//                 pen_box.setColor(Qt::cyan);
+//             }else{
+//                 pen_box.setColor(Qt::green);
+//             }
+//             painter.setPen(pen_box);
+//         }
+//         painter.drawPolygon(new_box.pts, 4);
+//         if (i == focus_box_index) {
+//             painter.setPen(pen_point_focus);
+//         } else {
+//             painter.setPen(pen_point);
+//         }
+//         painter.drawPoints(box.pts, 4);
+//         painter.setPen(pen_text);
+//         painter.drawText(box.pts[0], box.getName());
+
+//         QSvgRenderer &tag_render = standard_tag_render[box.tag_id];
+
+//         QPolygonF painter_ploygon;
+//         painter_ploygon.append({0., 0.});
+//         painter_ploygon.append({0., (double) geometry().height()});
+//         painter_ploygon.append({(double) geometry().width(), (double) geometry().height()});
+//         painter_ploygon.append({(double) geometry().width(), 0.});
+// //        QPolygonF std_tag_ploygon = box.getStandardPloygon();
+//         QPolygonF man_tag_ploygon;
+
+//         man_tag_ploygon.append(p1);
+//         man_tag_ploygon.append(p2);
+//         man_tag_ploygon.append(p3);
+//         man_tag_ploygon.append(p4);
+
+//         if (QTransform::quadToQuad(painter_ploygon, man_tag_ploygon, transform)) {
+//             painter.setTransform(transform);
+//             tag_render.render(&painter);
+//         }
+    }
+    
+    // 绘制鼠标相关
+    painter.setTransform(QTransform());
     QPointF *focus = nullptr;
     switch (mode) {
         case NORMAL_MODE:
@@ -146,94 +372,6 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         default:
             break;
     }
-
-    //
-    for (int i = 0; i < current_label.size(); i++) {
-        const auto &box = current_label[i];
-        double delta_x1, delta_y1, delta_x2, delta_y2, proportion;
-        delta_x1 = (box.pts[0].x() - box.pts[1].x()) / 2;
-        delta_y1 = (box.pts[0].y() - box.pts[1].y()) / 2;
-        delta_x2 = (box.pts[2].x() - box.pts[3].x()) / 2;
-        delta_y2 = (box.pts[2].y() - box.pts[3].y()) / 2;
-        switch (box.tag_id % 9) {
-            case 0:
-                proportion = 324. / 660.;
-                break;
-            case 1:
-                proportion = 323. / 660.;
-                break;
-            case 2:
-                proportion = 364. / 725.;
-                break;
-            case 3:
-                proportion = 361. / 725.;
-                break;
-            case 4:
-                proportion = 363. / 725.;
-                break;
-            case 5:
-                proportion = 359. / 725.;
-                break;
-            case 6:
-                proportion = 359. / 725.;
-                break;
-            case 7:
-                proportion = 359. / 725.;
-                break;
-            case 8:
-                proportion = 321. / 725.;
-                break;
-        }
-        QPointF p1((box.pts[0].x() + box.pts[1].x()) / 2 + delta_x1 / proportion,
-                   (box.pts[0].y() + box.pts[1].y()) / 2 + delta_y1 / proportion);
-        QPointF p2((box.pts[0].x() + box.pts[1].x()) / 2 - delta_x1 / proportion,
-                   (box.pts[0].y() + box.pts[1].y()) / 2 - delta_y1 / proportion);
-        QPointF p3((box.pts[2].x() + box.pts[3].x()) / 2 + delta_x2 / proportion,
-                   (box.pts[2].y() + box.pts[3].y()) / 2 + delta_y2 / proportion);
-        QPointF p4((box.pts[2].x() + box.pts[3].x()) / 2 - delta_x2 / proportion,
-                   (box.pts[2].y() + box.pts[3].y()) / 2 - delta_y2 / proportion);
-        box_t new_box;
-        new_box.pts[0] = p1;
-        new_box.pts[1] = p2;
-        new_box.pts[2] = p3;
-        new_box.pts[3] = p4;
-        QTransform transform;
-        painter.setTransform(transform);
-        if (i == focus_box_index) {
-            painter.setPen(pen_line_focus);
-        } else {
-            painter.setPen(pen_line);
-        }
-        painter.drawPolygon(new_box.pts, 4);
-        if (i == focus_box_index) {
-            painter.setPen(pen_point_focus);
-        } else {
-            painter.setPen(pen_point);
-        }
-        painter.drawPoints(box.pts, 4);
-        painter.setPen(pen_text);
-        painter.drawText(box.pts[0], box.getName());
-
-        QSvgRenderer &tag_render = standard_tag_render[box.tag_id];
-
-        QPolygonF painter_ploygon;
-        painter_ploygon.append({0., 0.});
-        painter_ploygon.append({0., (double) geometry().height()});
-        painter_ploygon.append({(double) geometry().width(), (double) geometry().height()});
-        painter_ploygon.append({(double) geometry().width(), 0.});
-//        QPolygonF std_tag_ploygon = box.getStandardPloygon();
-        QPolygonF man_tag_ploygon;
-
-        man_tag_ploygon.append(p1);
-        man_tag_ploygon.append(p2);
-        man_tag_ploygon.append(p3);
-        man_tag_ploygon.append(p4);
-
-        if (QTransform::quadToQuad(painter_ploygon, man_tag_ploygon, transform)) {
-            painter.setTransform(transform);
-            tag_render.render(&painter);
-        }
-    }
 }
 
 void DrawOnPic::setCurrentFile(QString file) {
@@ -245,20 +383,16 @@ void DrawOnPic::setCurrentFile(QString file) {
 }
 
 void DrawOnPic::loadImage() {
-    QImage *img = new QImage();
-    img->load(current_file);
-    ratio = std::min((double) QLabel::geometry().width() / img->width(),
-                     (double) QLabel::geometry().height() / img->height());
-    img_w = img->width();
-    img_h = img->height();
-    int w = img_w * ratio;
-    int h = img_h * ratio;
+    delete img_raw;
+    img_raw = new QImage();
+    img_raw->load(current_file);
+    ratio = std::min((double) QLabel::geometry().width() / img_raw->width(),
+                     (double) QLabel::geometry().height() / img_raw->height());
     delete im2show;
     im2show = new QImage();
-    *im2show = img->scaled(w, h);
+    *im2show = img_raw->scaled(img_raw->width() * ratio, img_raw->height() * ratio);
     dx = (QLabel::geometry().width() - im2show->width()) / 2;
     dy = (QLabel::geometry().height() - im2show->height()) / 2;
-    delete img;
     update();
 }
 
@@ -275,27 +409,34 @@ void DrawOnPic::setNormalMode() {
 }
 
 void DrawOnPic::setFocusBox(int index) {
-    if (0 <= index && index < current_label.size()) {
+    if (0 <= index && index < current_label_of_pic.size()) {
         focus_box_index = index;
         update();
     }
 }
 
 void DrawOnPic::removeBox(QVector<box_t>::iterator box_iter) {
-    current_label.erase(box_iter);
-    emit labelChanged(current_label);
+    current_label_of_raw.erase(box_iter);
+    update_label_of_pic();
+    emit labelChanged(current_label_of_raw);
 }
 
 void DrawOnPic::smart() {
     if (current_file.isEmpty()) return;
-    if (!model.run(current_file, current_label)) {
+    if (!model.run(current_file, current_label_of_raw)) {
         QMessageBox::warning(nullptr, "warning", "Cannot run smart!\n"
                                                  "This maybe due to compiling without openvino or a broken model file.\n"
                                                  "See warning.txt for detailed information.",
                              QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         return;
     }
-    for (auto &label : current_label) {
+    update_label_of_pic();
+    updateBox();
+}
+
+void DrawOnPic::update_label_of_pic(){
+    current_label_of_pic = current_label_of_raw;
+    for (auto &label : current_label_of_pic) {
         label.pts[0].rx() = label.pts[0].x() * ratio + dx;
         label.pts[1].rx() = label.pts[1].x() * ratio + dx;
         label.pts[2].rx() = label.pts[2].x() * ratio + dx;
@@ -305,26 +446,29 @@ void DrawOnPic::smart() {
         label.pts[2].ry() = label.pts[2].y() * ratio + dy;
         label.pts[3].ry() = label.pts[3].y() * ratio + dy;
     }
-    updateBox();
 }
 
 QVector<box_t> &DrawOnPic::get_current_label() {
-    return current_label;
+    return current_label_of_raw;
 }
 
 void DrawOnPic::updateBox() {
+    update_label_of_pic();
     update();
-    emit labelChanged(current_label);
+    emit labelChanged(current_label_of_raw);
 }
 
 void DrawOnPic::reset() {
     current_file = "";
+    delete img_raw;
     delete im2show;
     delete roi;
+    img_raw = nullptr;
     im2show = nullptr;
     roi = nullptr;
 
-    current_label.clear();
+    current_label_of_raw.clear();
+    current_label_of_pic.clear();
     draging = nullptr;
     focus_box_index = -1;
     adding.clear();
@@ -333,7 +477,7 @@ void DrawOnPic::reset() {
 }
 
 void DrawOnPic::loadLabel() {
-    current_label.clear();
+    current_label_of_pic.clear();
     QFileInfo image_file = current_file;
     QFileInfo label_file = image_file.absoluteFilePath().replace(image_file.completeSuffix(), "txt");
     if (label_file.exists()) {
@@ -351,43 +495,44 @@ void DrawOnPic::loadLabel() {
                        >> label.pts[1].rx() >> label.pts[1].ry()
                        >> label.pts[2].rx() >> label.pts[2].ry()
                        >> label.pts[3].rx() >> label.pts[3].ry();
-                label.pts[0].rx() = label.pts[0].x() * img_w * ratio + dx;
-                label.pts[1].rx() = label.pts[1].x() * img_w * ratio + dx;
-                label.pts[2].rx() = label.pts[2].x() * img_w * ratio + dx;
-                label.pts[3].rx() = label.pts[3].x() * img_w * ratio + dx;
-                label.pts[0].ry() = label.pts[0].y() * img_h * ratio + dy;
-                label.pts[1].ry() = label.pts[1].y() * img_h * ratio + dy;
-                label.pts[2].ry() = label.pts[2].y() * img_h * ratio + dy;
-                label.pts[3].ry() = label.pts[3].y() * img_h * ratio + dy;
-                current_label.append(label);
+                label.pts[0].rx() = label.pts[0].x() * img_raw->width();
+                label.pts[1].rx() = label.pts[1].x() * img_raw->width();
+                label.pts[2].rx() = label.pts[2].x() * img_raw->width();
+                label.pts[3].rx() = label.pts[3].x() * img_raw->width();
+                label.pts[0].ry() = label.pts[0].y() * img_raw->height();
+                label.pts[1].ry() = label.pts[1].y() * img_raw->height();
+                label.pts[2].ry() = label.pts[2].y() * img_raw->height();
+                label.pts[3].ry() = label.pts[3].y() * img_raw->height();
+                current_label_of_raw.append(label);
+                update_label_of_pic();
             }
         }
     }
-    emit labelChanged(current_label);
+    emit labelChanged(current_label_of_pic);
 }
 
 void DrawOnPic::saveLabel() {
     QFileInfo image_file = current_file;
     QFileInfo label_file = image_file.absoluteFilePath().replace(image_file.completeSuffix(), "txt");
     QFile fp(label_file.absoluteFilePath());
-    if (current_label.empty()) {
+    if (current_label_of_pic.empty()) {
         fp.remove();
         return;
     }
     if (fp.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
         QTextStream stream(&fp);
-        for (const box_t &box: current_label) {
+        for (const box_t &box: current_label_of_raw) {
             stream << (box.color_id * 9 + box.tag_id) << " "
-                   << (box.pts[0].x() - dx) / ratio / img_w << " " << (box.pts[0].y() - dy) / ratio / img_h << " "
-                   << (box.pts[1].x() - dx) / ratio / img_w << " " << (box.pts[1].y() - dy) / ratio / img_h << " "
-                   << (box.pts[2].x() - dx) / ratio / img_w << " " << (box.pts[2].y() - dy) / ratio / img_h << " "
-                   << (box.pts[3].x() - dx) / ratio / img_w << " " << (box.pts[3].y() - dy) / ratio / img_h << endl;
+                   << box.pts[0].x() / img_raw->width() << " " << box.pts[0].y() / img_raw->height() << " "
+                   << box.pts[1].x() / img_raw->width() << " " << box.pts[1].y() / img_raw->height() << " "
+                   << box.pts[2].x() / img_raw->width() << " " << box.pts[2].y() / img_raw->height() << " "
+                   << box.pts[3].x() / img_raw->width() << " " << box.pts[3].y() / img_raw->height() << endl;
         }
     }
 }
 
 QPointF *DrawOnPic::checkPoint() {
-    for (box_t &box: current_label) {
+    for (box_t &box: current_label_of_pic) {
         for (int i = 0; i < 4; i++) {
             QPointF dif = box.pts[i] - pos;
             if (dif.manhattanLength() < 5) {

@@ -23,7 +23,13 @@ protected:
 
     void mouseReleaseEvent(QMouseEvent *event);
 
-    void paintEvent(QPaintEvent *);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+
+    void wheelEvent(QWheelEvent* event);
+
+    void keyPressEvent(QKeyEvent* event);
+
+    void paintEvent(QPaintEvent *event);
 
 public slots:
 
@@ -60,6 +66,8 @@ private:
 
     void drawRoi(QPainter &painter);
 
+    void update_label_of_pic();
+
 private:
     QString current_file;
 
@@ -68,19 +76,27 @@ private:
     SmartModel model;
 
     double ratio;
-    int dx, dy, img_w, img_h;
+    int dx, dy;
+    QImage *img_raw = nullptr;
     QImage *im2show = nullptr;
     QImage *roi = nullptr;
 
-    QVector<box_t> current_label;
+    QPolygonF big_svg_ploygen, small_svg_ploygen;
+    QPolygonF big_pts, small_pts;
+
+    QVector<box_t> current_label_of_pic;
+    QVector<box_t> current_label_of_raw;
     QPointF *draging = nullptr;
     int focus_box_index = -1;
     QVector<QPoint> adding;
     QPoint pos;
 
+    QPoint right_drag_pos;
+
     QPen pen_point_focus;
     QPen pen_point;
-    QPen pen_line_focus;
+    QPen pen_box_focus;
+    QPen pen_box;
     QPen pen_line;
     QPen pen_text;
 
