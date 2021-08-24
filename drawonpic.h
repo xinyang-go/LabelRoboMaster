@@ -16,6 +16,10 @@ public:
 
     bool with_openvino() const { return model.with_openvino(); }
 
+    void reset();
+    
+    QVector<box_t> &get_current_label();
+
 protected:
     void mousePressEvent(QMouseEvent *event);
 
@@ -49,8 +53,6 @@ public slots:
 
     void smart();
 
-    QVector<box_t> &get_current_label();
-
     void updateBox();
 
 signals:
@@ -58,15 +60,12 @@ signals:
     void labelChanged(const QVector<box_t> &);
 
 private:
-    void reset();
 
     void loadLabel();
 
+    void drawROI(QPainter& painter);
+
     QPointF *checkPoint();
-
-    void drawRoi(QPainter &painter);
-
-    void update_label_of_pic();
 
 private:
     QString current_file;
@@ -75,23 +74,24 @@ private:
 
     SmartModel model;
 
-    double ratio;
-    int dx, dy;
-    QImage *img_raw = nullptr;
-    QImage *im2show = nullptr;
-    QImage *roi = nullptr;
+    QTransform norm2img;        // 归一化图像坐标到图像坐标
+    QTransform img2label;       // 图像坐标到实际显示的坐标
+
+    // double ratio;
+    // int dx, dy;
+    QImage *img = nullptr;
 
     QPolygonF big_svg_ploygen, small_svg_ploygen;
     QPolygonF big_pts, small_pts;
 
-    QVector<box_t> current_label_of_pic;
-    QVector<box_t> current_label_of_raw;
+    QVector<box_t> current_label;   // 归一化坐标
+
     QPointF *draging = nullptr;
     int focus_box_index = -1;
-    QVector<QPoint> adding;
-    QPoint pos;
+    QVector<QPointF> adding;
+    QPointF pos;
 
-    QPoint right_drag_pos;
+    QPointF right_drag_pos;
 
     QPen pen_point_focus;
     QPen pen_point;

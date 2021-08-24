@@ -33,6 +33,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::on_openDirectoryPushButton_clicked() {
+    ui->label->reset();
     QStringList image_filter = {"*.jpg", "*.png", "*.jpeg"};
     QDir dir = QFileDialog::getExistingDirectory(this, "", ".", QFileDialog::ShowDirsOnly);
     ui->fileListWidget->clear();

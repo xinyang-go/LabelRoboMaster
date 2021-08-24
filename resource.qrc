@@ -1,12 +1,16 @@
 <RCC>
     <qresource prefix="/pic/tags">
         <file>resource/G.svg</file>
-        <file>resource/B.svg</file>
         <file>resource/5.svg</file>
         <file>resource/4.svg</file>
         <file>resource/3.svg</file>
         <file>resource/2.svg</file>
         <file>resource/1.svg</file>
+        <file>resource/O.svg</file>
+        <file>resource/Bs.svg</file>
+        <file>resource/Bb.svg</file>
+        <file>resource/Big.svg</file>
+        <file>resource/Small.svg</file>
     </qresource>
 
     <qresource prefix="/nn">
