@@ -1,4 +1,5 @@
 #include "drawonpic.h"
+#include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
