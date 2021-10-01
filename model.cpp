@@ -56,6 +56,27 @@ constexpr float sigmoid(float x) {
 
 
 SmartModel::SmartModel() {
+    qDebug("initializing smart model... please wait.");
+    try {
+        QFile xml_file(":/nn/resource/model-opt-int8.xml");
+        QFile bin_file(":/nn/resource/model-opt-int8.bin");
+        xml_file.open(QIODevice::ReadOnly);
+        bin_file.open(QIODevice::ReadOnly);
+        auto xml_bytes = xml_file.readAll();
+        auto bin_bytes = bin_file.readAll();
+        net = cv::dnn::readNetFromModelOptimizer((uchar*)xml_bytes.data(), xml_bytes.size(), 
+                                                 (uchar*)bin_bytes.data(), bin_bytes.size());
+        cv::Mat input(640, 640, CV_8UC3);
+        auto x = cv::dnn::blobFromImage(input);
+        net.setInput(x);
+        net.forward();
+        mode = "openvino-int8-cpu";
+        return;
+    } catch (cv::Exception &) {
+        // openvino int8 unavailable
+    }
+
+
     QFile onnx_file(":/nn/resource/model-opt.onnx");
     onnx_file.open(QIODevice::ReadOnly);
     auto onnx_bytes = onnx_file.readAll();
@@ -69,11 +90,11 @@ SmartModel::SmartModel() {
         auto x = cv::dnn::blobFromImage(input) / 255.;
         net.setInput(x);
         net.forward();
-        is_openvino = true;
+        mode = "openvino-fp32-cpu";
     } catch (cv::Exception &) {
         net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
         net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-        is_openvino = false;
+        mode = "dnn-fp32-cpu";
     }
 }
 
@@ -84,8 +105,7 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
         cv::resize(img, img, {(int)round(img.cols * scale), (int)round(img.rows * scale)});
         cv::Mat input(640, 640, CV_8UC3, 127);
         img.copyTo(input({0, 0, img.cols, img.rows}));
-        cv::cvtColor(input, input, cv::COLOR_BGR2RGB);
-        auto x = cv::dnn::blobFromImage(input) / 255;
+        auto x = cv::dnn::blobFromImage(input);
         net.setInput(x);
         auto y = net.forward();
         QVector<box_t> before_nms;
