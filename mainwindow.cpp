@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
+#include <QCoreApplication>
 #include <iostream>
 
 class IndexQListWidgetItem : public QListWidgetItem {
@@ -75,10 +76,18 @@ void MainWindow::on_labelListWidget_currentItemChanged(QListWidgetItem *current,
 }
 
 void MainWindow::on_smartPushButton_clicked() {
-    ui->label->smart();
-
+    ui->label->smart();   
 }
-
+void MainWindow::on_smartAllPushButton_clicked() {
+    for(int i = 0; i < ui->fileListWidget->count(); i++){
+        std::cout << "next: " << i << std::endl;
+        ui->fileListWidget->setCurrentRow(i);
+        ui->label->smart();
+        // ui->label->setCurrentFile(ui->fileListWidget->item(i)->text());
+        ui->label->saveLabel();
+        QCoreApplication::processEvents();
+    }
+}
 void MainWindow::on_nextPushButton_clicked() {
     if (ui->autoSaveCheckBox->checkState() == Qt::Checked) {
         ui->label->saveLabel();

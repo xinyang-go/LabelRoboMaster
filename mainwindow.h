@@ -32,6 +32,8 @@ private slots:
 
     void on_smartPushButton_clicked();
 
+    void on_smartAllPushButton_clicked();
+
     void on_nextPushButton_clicked();
 
     void on_prevPushButton_clicked();

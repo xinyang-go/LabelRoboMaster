@@ -46,11 +46,11 @@ static inline int argmax(const float *ptr, int len) {
     return max_arg;
 }
 
-constexpr float inv_sigmoid(float x) {
+float inv_sigmoid(float x) {
     return -std::log(1 / x - 1);
 }
 
-constexpr float sigmoid(float x) {
+float sigmoid(float x) {
     return 1 / (1 + std::exp(-x));
 }
 

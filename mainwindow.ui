@@ -32,7 +32,7 @@
       <x>0</x>
       <y>0</y>
       <width>200</width>
-      <height>541</height>
+      <height>640</height>
      </rect>
     </property>
     <property name="title">
@@ -142,11 +142,34 @@
       <string>Space</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="nextPushButton">
+    <widget class="QPushButton" name="smartAllPushButton">
      <property name="geometry">
       <rect>
        <x>0</x>
        <y>340</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Smart All</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/auto-fix.png</normaloff>:/icon/resource/auto-fix.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="nextPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>420</y>
        <width>200</width>
        <height>80</height>
       </rect>
@@ -172,7 +195,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>420</y>
+       <y>500</y>
        <width>200</width>
        <height>80</height>
       </rect>
@@ -198,7 +221,7 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>510</y>
+       <y>590</y>
        <width>100</width>
        <height>25</height>
       </rect>
