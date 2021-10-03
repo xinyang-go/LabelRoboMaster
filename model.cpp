@@ -105,7 +105,17 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
         cv::resize(img, img, {(int)round(img.cols * scale), (int)round(img.rows * scale)});
         cv::Mat input(640, 640, CV_8UC3, 127);
         img.copyTo(input({0, 0, img.cols, img.rows}));
-        auto x = cv::dnn::blobFromImage(input);
+        
+        // TODO: 为了兼容int8模型和fp32模型的不同输入格式而加的临时操作
+        //       后续会统一两个模型的输入格式
+        cv::Mat x;
+        if(mode == "openvino-int8-cpu") {
+            x = cv::dnn::blobFromImage(input);
+        } else {
+            cv::cvtColor(input, input, cv::COLOR_BGR2RGB);
+            x = cv::dnn::blobFromImage(input) / 255;
+        }
+
         net.setInput(x);
         auto y = net.forward();
         QVector<box_t> before_nms;
