@@ -22,11 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QObject::connect(ui->addLabelPushButton, &QPushButton::clicked, ui->label, &DrawOnPic::setAddingMode);
     QObject::connect(ui->savePushButton, &QPushButton::clicked, ui->label, &DrawOnPic::saveLabel);
-    if (ui->label->with_openvino()) {
-        ui->labelOpenvino->setText("openvino: enable");
-    } else {
-        ui->labelOpenvino->setText("openvino: disable");
-    }
+    ui->labelOpenvino->setText(ui->label->model_mode());
 }
 
 MainWindow::~MainWindow() {
