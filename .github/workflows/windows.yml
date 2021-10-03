@@ -3,15 +3,14 @@ on:
   # push代码时触发workflow
   push:
     paths:
-      - "*.pro"
-      - "src/**"
+      - "*.cpp"
       - ".github/workflows/windows.yml"
       - "CMakeLists.txt"
   pull_request:
     paths:
-      - "*.pro"
-      - "src/**"
+      - "*.cpp"
       - ".github/workflows/windows.yml"
+      - "CMakeLists.txt"
 jobs:
   build:
     name: Build

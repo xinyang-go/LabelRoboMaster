@@ -22,7 +22,6 @@ add_executable(${PROJECT_NAME} ${src} ${resource})
 
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
-
 # 指定包的版本号
 set(_VERSION_MAJOR 0)
 set(_VERSION_MINOR 1)
@@ -51,7 +50,7 @@ IF(UNIX)
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             )
 
-    include(CPack)
+    # include(CPack)
 ELSEIF(WIN32)
 
 ENDIF()
