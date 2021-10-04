@@ -1,0 +1,8 @@
+[Desktop Entry]
+Categories=Utility;
+Icon=LabelRoboMaster
+Name=LabelRoboMaster
+Type=Application
+Exec=LabelRoboMaster
+
+X-AppImage-Version=19f7338

@@ -1,0 +1,71 @@
+name: Ubuntu
+# Qt官方没有linux平台的x86包
+on:
+  push:
+    paths:
+      - "*.cpp"
+      - ".github/workflows/ubuntu.yml"
+      - "CMakeLists.txt"
+  pull_request:
+    paths:
+      - "*.cpp"
+      - ".github/workflows/ubuntu.yml"
+      - "CMakeLists.txt"
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        qt_ver: [5.15.2]
+        qt_arch: [gcc_64]
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.13.0
+        with:
+          version: ${{ matrix.qt_ver }}
+          cached: "false"
+      - name: Setup openvino
+        run: |+
+          wget "https://hola.obs.cn-north-4.myhuaweicloud.com/openvino_Linux.tgz"
+          mkdir openvino_Linux
+          tar -xvzf openvino_Linux.tgz -C openvino_Linux
+          cd openvino_Linux
+          mv ./l_openvino_toolkit_p_2021.4.689/* .
+          sudo sed -i 's/decline/accept/g' silent.cfg
+          sudo ./install.sh -s silent.cfg
+          cd /opt/intel/openvino_2021/install_dependencies
+          sudo -E ./install_openvino_dependencies.sh
+          cd /opt/intel/openvino_2021/deployment_tools/model_optimizer/install_prerequisites
+          sudo ./install_prerequisites.sh
+      - name: ubuntu install GL library
+        run: sudo apt-get install -y ocl-icd-opencl-dev libglew-dev libglfw3-dev libxcb-xkb1 libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-xinerama0-dev libxkbcommon-dev libxkbcommon-x11-dev
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: build and package ubuntu
+        run: |
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          mkdir build
+          cd build
+          cmake ..
+          make
+          make install DESTDIR=AppDir
+      - name: package
+        run: |
+          source /opt/intel/openvino_2021/bin/setupvars.sh
+          cd build
+          wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+          export QML_SOURCES_PATHS=".."
+          mkdir ./AppDir/usr/lib -p
+          sudo cp -f /opt/intel/openvino_2021/inference_engine/lib/intel64/{*.so,plugins.xml} ./AppDir/usr/lib/
+          rm ./AppDir/usr/lib/libHDDLPlugin.so
+          cp -f ../scripts/{LabelRoboMaster.desktop,LabelRoboMaster.png} ./AppDir
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir -e LabelRoboMaster --plugin qt --output appimage
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Linux_Ubuntu_openvino
+          path: ./build/LabelRoboMaster*.AppImage
