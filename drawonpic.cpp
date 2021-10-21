@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     pen_point_focus.setWidth(5);
@@ -47,7 +48,7 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     small_pts.append({11., 371.});
     small_pts.append({546., 371.});
     small_pts.append({546., 146.});
-
+    // 加载svg图片
     standard_tag_render[0].load(QString(":/pic/tags/resource/G.svg"));
     standard_tag_render[1].load(QString(":/pic/tags/resource/1.svg"));
     standard_tag_render[2].load(QString(":/pic/tags/resource/2.svg"));
@@ -57,17 +58,19 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     standard_tag_render[6].load(QString(":/pic/tags/resource/O.svg"));
     standard_tag_render[7].load(QString(":/pic/tags/resource/Bs.svg"));
     standard_tag_render[8].load(QString(":/pic/tags/resource/Bb.svg"));
-
+    // 读取鼠标键盘的数据
     this->setMouseTracking(true);
     this->grabKeyboard();
 }
 
 void DrawOnPic::mousePressEvent(QMouseEvent *event) {
-    pos = event->pos();
+    pos = event->pos();     // 记录当前鼠标位置
 
     if (event->button() == Qt::LeftButton) {
         switch (mode) {
             case NORMAL_MODE:
+                // normal模式下，鼠标左键用于确定兴趣点。
+                // 用于拖动定位点。
                 draging = checkPoint();
                 if (draging) {
                     for (int i = 0; i < current_label.size(); ++i) {
@@ -85,11 +88,12 @@ void DrawOnPic::mousePressEvent(QMouseEvent *event) {
             default:
                 break;
         }
-        update();
+        update();   // 更新绘图
     } else if (event->button() == Qt::RightButton) {
-        right_drag_pos = pos;
+        // 右键用于图像拖动，记录拖动起点
+        right_drag_pos = pos;   
         setNormalMode();
-        update();
+        update();   // 更新绘图
     }
 }
 
@@ -98,7 +102,7 @@ void DrawOnPic::mouseMoveEvent(QMouseEvent *event) {
 
     switch (mode) {
         case NORMAL_MODE:
-            if (draging) {
+            if (draging) {  // 如果正在拖动一个定位点，则将定位点位置设置成鼠标位置
                 *draging = norm2img.inverted().map(img2label.inverted().map(pos));
             }
             update();
@@ -110,8 +114,8 @@ void DrawOnPic::mouseMoveEvent(QMouseEvent *event) {
             break;
     }
 
-    // 右键拖动
-    if(event->buttons() & Qt::RightButton){
+    // 右键拖动，计算图片移动后的QTransform
+    if(event->buttons() & Qt::RightButton){ 
         QTransform delta;
         delta.translate(pos.x() - right_drag_pos.x(), pos.y() - right_drag_pos.y());
         img2label = img2label * delta;
@@ -124,10 +128,10 @@ void DrawOnPic::mouseReleaseEvent(QMouseEvent *event) {
     pos = event->pos();
     if (event->button() == Qt::LeftButton) {
         switch (mode) {
-            case NORMAL_MODE:
+            case NORMAL_MODE:   // 松开左键，停止拖动定位点
                 draging = nullptr;
                 break;
-            case ADDING_MODE:
+            case ADDING_MODE:   // 松开左键，添加一个定位点
                 adding.append(norm2img.inverted().map(img2label.inverted().map(pos)));
                 if (adding.size() == 4) {
                     box_t box;
@@ -153,6 +157,8 @@ void DrawOnPic::mouseDoubleClickEvent(QMouseEvent *event){
 }
 
 void DrawOnPic::wheelEvent(QWheelEvent* event){
+    // 滚轮缩放图像，计算缩放后的QTransform
+
     const double delta = (event->delta() > 0) ? (1.1) : (1 / 1.1);
     
     double mx = event->pos().x();
@@ -271,6 +277,7 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
 }
 
 void DrawOnPic::setCurrentFile(QString file) {
+    // 切换标注中的文件
     reset();
     current_file = file;
     loadImage();
@@ -279,6 +286,9 @@ void DrawOnPic::setCurrentFile(QString file) {
 }
 
 void DrawOnPic::loadImage() {
+    // 加载图片时，需要计算两个QTransform的初值
+    // 一个用于缩放图像显示
+    // 一个用于将归一化标签坐标变为对应像素坐标
     delete img;
     img = new QImage();
     img->load(current_file);
@@ -312,6 +322,7 @@ void DrawOnPic::loadImage() {
 }
 
 void DrawOnPic::setAddingMode() {
+    // 设置当前模式为正在添加一个新目标
     if (img == nullptr) return;
     mode = ADDING_MODE;
     adding.clear();
@@ -319,12 +330,14 @@ void DrawOnPic::setAddingMode() {
 }
 
 void DrawOnPic::setNormalMode() {
+    // 设置当前模式为normal
     mode = NORMAL_MODE;
     draging = nullptr;
     adding.clear();
 }
 
 void DrawOnPic::setFocusBox(int index) {
+    // 设置当前选中目标（高亮，快捷删除）
     if (0 <= index && index < current_label.size()) {
         focus_box_index = index;
         update();
@@ -332,19 +345,28 @@ void DrawOnPic::setFocusBox(int index) {
 }
 
 void DrawOnPic::removeBox(QVector<box_t>::iterator box_iter) {
+    // 删除一个目标
     current_label.erase(box_iter);
     emit labelChanged(current_label);
 }
 
 void DrawOnPic::smart() {
+    // 对当前图片进行一次智能标注。
     if (current_file.isEmpty()) return;
+    using namespace std::chrono;
+    auto t1 = high_resolution_clock::now(); // 统计运行时间
     if (!model.run(current_file, current_label)) {
+        // 运行失败报错
         QMessageBox::warning(nullptr, "warning", "Cannot run smart!\n"
                                                  "This maybe due to compiling without openvino or a broken model file.\n"
                                                  "See warning.txt for detailed information.",
                              QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         return;
     }
+    auto t2 = high_resolution_clock::now(); // 统计运行时间
+    latency_ms = duration_cast<milliseconds>(t2-t1).count();
+    qDebug("latency=%dms", latency_ms);
+    // 模型输出的像素坐标变为归一化坐标
     for(auto &l: current_label){
         for(auto &pt: l.pts) {
             pt.rx() /= img->width();
@@ -369,9 +391,11 @@ void DrawOnPic::reset() {
     focus_box_index = -1;
     adding.clear();
     mode = NORMAL_MODE;
+    latency_ms = -1;
 }
 
 void DrawOnPic::loadLabel() {
+    // 加载当前图片对应的标签文件
     current_label.clear();
     QFileInfo image_file = current_file;
     QFileInfo label_file = image_file.absoluteFilePath().replace(image_file.completeSuffix(), "txt");
@@ -398,10 +422,13 @@ void DrawOnPic::loadLabel() {
 }
 
 void DrawOnPic::saveLabel() {
+    // 保存当前图片的目标到对应的标签文件
     QFileInfo image_file = current_file;
     QFileInfo label_file = image_file.absoluteFilePath().replace(image_file.completeSuffix(), "txt");
     QFile fp(label_file.absoluteFilePath());
-    if (current_label.empty()) {
+    if (current_label.empty()) {    
+        // 如果当前图片没有任何目标，则删除标签文件。
+        // 主要避免之前保存过有目标的文件。
         fp.remove();
         return;
     }
@@ -417,7 +444,8 @@ void DrawOnPic::saveLabel() {
     }
 }
 
-void DrawOnPic::drawROI(QPainter &painter){
+void DrawOnPic::drawROI(QPainter &painter) {
+    // 绘制ROI放大图
     QRect label_rect = QRect(QPoint(pos.x(), pos.y()) - QPoint{16, 16}, QPoint(pos.x(), pos.y()) + QPoint{16, 16});
     QRect img_rect = img2label.inverted().mapRect(label_rect);
     QImage roi_img = img->copy(img_rect).scaled(128, 128);
@@ -430,6 +458,9 @@ void DrawOnPic::drawROI(QPainter &painter){
 }
 
 QPointF *DrawOnPic::checkPoint() {
+    // 检查当前鼠标位置距离哪个定位点最近
+    // 如果距离小于5，则判定为选中该点
+    // 用于拖动定位点
     for (box_t &box: current_label) {
         for (int i = 0; i < 4; i++) {
             QPointF dif = img2label.map(norm2img.map(box.pts[i])) - pos;

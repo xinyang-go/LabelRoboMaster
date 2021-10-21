@@ -100,6 +100,8 @@ private:
     QPen pen_line;
     QPen pen_text;
 
+    int latency_ms = -1;
+
     enum mode_t {
         NORMAL_MODE,
         ADDING_MODE,

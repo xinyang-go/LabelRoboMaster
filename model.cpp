@@ -25,6 +25,8 @@ T reduce_max(T x, Ts ...xs) {
     return reduce([](auto a, auto b) { return std::max(a, b); }, x, xs...);
 }
 
+// 判断目标外接矩形是否相交，用于nms。
+// 等效于thres=0的nms。
 static inline bool is_overlap(const QPointF pts1[4], const QPointF pts2[4]) {
     cv::Rect2f box1, box2;
     box1.x = reduce_min(pts1[0].x(), pts1[1].x(), pts1[2].x(), pts1[3].x());
@@ -58,6 +60,8 @@ float sigmoid(float x) {
 SmartModel::SmartModel() {
     qDebug("initializing smart model... please wait.");
     try {
+        // 首先尝试加载openvino-int8模型，并进行一次空运行。
+        // 用于判断该模型在当前环境下是否可用。
         QFile xml_file(":/nn/resource/model-opt-int8.xml");
         QFile bin_file(":/nn/resource/model-opt-int8.bin");
         xml_file.open(QIODevice::ReadOnly);
@@ -66,17 +70,17 @@ SmartModel::SmartModel() {
         auto bin_bytes = bin_file.readAll();
         net = cv::dnn::readNetFromModelOptimizer((uchar*)xml_bytes.data(), xml_bytes.size(), 
                                                  (uchar*)bin_bytes.data(), bin_bytes.size());
-        cv::Mat input(640, 640, CV_8UC3);
+        cv::Mat input(640, 640, CV_8UC3);       // 构造输入数据
         auto x = cv::dnn::blobFromImage(input);
         net.setInput(x);
         net.forward();
-        mode = "openvino-int8-cpu";
+        mode = "openvino-int8-cpu";     // 设置当前模型模式
         return;
     } catch (cv::Exception &) {
         // openvino int8 unavailable
     }
 
-
+    // int8模型不可用，加载fp32模型
     QFile onnx_file(":/nn/resource/model-opt.onnx");
     onnx_file.open(QIODevice::ReadOnly);
     auto onnx_bytes = onnx_file.readAll();
@@ -84,22 +88,25 @@ SmartModel::SmartModel() {
     net = cv::dnn::readNetFromONNX(onnx_bytes.data(), onnx_bytes.size());
 
     try {
+        // 尝试使用openvino模式运行fp32模型
         net.setPreferableBackend(cv::dnn::DNN_BACKEND_INFERENCE_ENGINE);
         net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
         cv::Mat input(640, 640, CV_8UC3);
         auto x = cv::dnn::blobFromImage(input) / 255.;
         net.setInput(x);
         net.forward();
-        mode = "openvino-fp32-cpu";
+        mode = "openvino-fp32-cpu"; // 设置当前模型模式
     } catch (cv::Exception &) {
+        // 无法使用openvino运行fp32模型，则使用默认的opencv-dnn模式。
         net.setPreferableBackend(cv::dnn::DNN_BACKEND_DEFAULT);
         net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-        mode = "dnn-fp32-cpu";
+        mode = "dnn-fp32-cpu";      // 设置当前模型模式
     }
 }
 
 bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
     try {
+        // 加载图片，并等比例resize为640x640。空余部分用0进行填充。
         auto img = cv::imread(image_file.toStdString());
         float scale = 640.f / std::max(img.cols, img.rows);
         cv::resize(img, img, {(int)round(img.cols * scale), (int)round(img.rows * scale)});
@@ -115,9 +122,10 @@ bool SmartModel::run(const QString &image_file, QVector<box_t> &boxes) {
             cv::cvtColor(input, input, cv::COLOR_BGR2RGB);
             x = cv::dnn::blobFromImage(input) / 255;
         }
-
+        // 模型推理
         net.setInput(x);
         auto y = net.forward();
+        // 模型后处理
         QVector<box_t> before_nms;
         for (int i = 0; i < y.size[1]; i++) {
             float *result = (float *) y.data + i * y.size[2];
