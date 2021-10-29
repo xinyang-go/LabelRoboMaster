@@ -38,16 +38,31 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     small_svg_ploygen.append({0., 516.});
     small_svg_ploygen.append({557., 516.});
     small_svg_ploygen.append({557., 0.});
+    
+// 重新测量后的坐标点定义
     // 大装甲标注点对应在svg图中的4个坐标
-    big_pts.append({11., 141.});
-    big_pts.append({11., 344.});
-    big_pts.append({860., 344.});
-    big_pts.append({860., 141.});
+    big_pts.append({0., 140.61});
+    big_pts.append({0., 347.39});
+    big_pts.append({871., 347.39});
+    big_pts.append({871., 140.61});
     // 小装甲标注点对应在svg图中的4个坐标
-    small_pts.append({11., 146.});
-    small_pts.append({11., 371.});
-    small_pts.append({546., 371.});
-    small_pts.append({546., 146.});
+    small_pts.append({0., 143.26});
+    small_pts.append({0., 372.74});
+    small_pts.append({557., 372.74});
+    small_pts.append({557., 143.26});
+    
+// 历史坐标点定义    
+//     // 大装甲标注点对应在svg图中的4个坐标
+//     big_pts.append({11., 141.});
+//     big_pts.append({11., 344.});
+//     big_pts.append({860., 344.});
+//     big_pts.append({860., 141.});
+//     // 小装甲标注点对应在svg图中的4个坐标
+//     small_pts.append({11., 146.});
+//     small_pts.append({11., 371.});
+//     small_pts.append({546., 371.});
+//     small_pts.append({546., 146.});
+    
     // 加载svg图片
     standard_tag_render[0].load(QString(":/pic/tags/resource/G.svg"));
     standard_tag_render[1].load(QString(":/pic/tags/resource/1.svg"));
