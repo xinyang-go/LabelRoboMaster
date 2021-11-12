@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QObject::connect(ui->addLabelPushButton, &QPushButton::clicked, ui->label, &DrawOnPic::setAddingMode);
     QObject::connect(ui->savePushButton, &QPushButton::clicked, ui->label, &DrawOnPic::saveLabel);
+    QObject::connect(ui->stayPositionCheckBox, &QCheckBox::toggled, ui->label, &DrawOnPic::stayPositionChanged);
     ui->labelOpenvino->setText(ui->label->model_mode());  // 获取当前模型模式，并显示在窗口左下角
 }
 

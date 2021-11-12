@@ -221,13 +221,26 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>590</y>
+       <y>580</y>
        <width>100</width>
        <height>25</height>
       </rect>
      </property>
      <property name="text">
       <string>Auto Save</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="stayPositionCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>610</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stay Position</string>
      </property>
     </widget>
    </widget>

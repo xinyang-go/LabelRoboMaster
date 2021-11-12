@@ -55,6 +55,8 @@ public slots:
 
     void updateBox();
 
+    void stayPositionChanged(bool value);
+
 signals:
 
     void labelChanged(const QVector<box_t> &);
@@ -76,6 +78,8 @@ private:
 
     QTransform norm2img;        // 归一化图像坐标到图像坐标
     QTransform img2label;       // 图像坐标到实际显示的坐标
+
+    bool stayPosition = false;   //为true时加载图像时不刷新img2label（即继续显示同一局部
 
     // double ratio;
     // int dx, dy;

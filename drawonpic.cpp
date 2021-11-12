@@ -374,8 +374,8 @@ void DrawOnPic::loadImage() {
     label_polygen.append({x1 + ratio * img->width(), y1});
     
     QTransform::quadToQuad(norm_polygen, image_polygen, norm2img);
-    QTransform::quadToQuad(image_polygen, label_polygen, img2label);
-    
+    if(!stayPosition) QTransform::quadToQuad(image_polygen, label_polygen, img2label);
+
     update();
 }
 
@@ -532,4 +532,8 @@ QPointF *DrawOnPic::checkPoint() {
 
 QVector<box_t>& DrawOnPic::get_current_label() {
     return current_label;
+}
+
+void DrawOnPic::stayPositionChanged(bool value) {
+    stayPosition = value;
 }
