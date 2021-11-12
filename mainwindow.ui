@@ -116,6 +116,32 @@
       <string>A</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="interpolateButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>180</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Interpolate (I)</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/auto-fix.png</normaloff>:/icon/resource/auto-fix.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="shortcut">
+      <string>I</string>
+     </property>
+    </widget>
     <widget class="QPushButton" name="smartPushButton">
      <property name="geometry">
       <rect>

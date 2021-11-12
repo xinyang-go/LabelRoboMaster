@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QCoreApplication>
 #include <iostream>
+#include <QMessageBox>
 
 class IndexQListWidgetItem : public QListWidgetItem {
 public:
@@ -133,4 +134,57 @@ void MainWindow::on_fileListHorizontalSlider_rangeChanged(int min, int max) {
     // 响应文件列表拖动条
     QString text;
     ui->fileListLabel->setText(text.sprintf("[%d/%d]", ui->fileListHorizontalSlider->value(), max));
+}
+
+void MainWindow::on_interpolateButton_clicked() {
+    enum InterpolateStatus {
+        Idle, Waiting4A, Waiting4B
+    };// 三种状态：闲置，准备选择第一个插值点，准备选择第二个插值点
+    static InterpolateStatus status = Idle;
+    static int target_idx = 0;
+    static box_t box_a, box_b;
+    switch (status) {
+        case Idle:
+            target_idx = ui->fileListWidget->currentRow();
+            if (target_idx - 1 < 0 || target_idx + 1 >= ui->fileListWidget->count()) { //考虑到后面实际上可以随意选择插值来源，这个判断可有可无
+                QMessageBox::warning(this, "Invalid interpolate", "Can't interpolate boxes on first or last picture.");
+            } else {
+                if (ui->autoSaveCheckBox->isChecked()) ui->label->saveLabel();
+                ui->fileListWidget->setCurrentRow(target_idx - 1); // 自动跳转到上一张图
+                status = Waiting4A;
+            }
+            break;
+        case Waiting4A:
+        case Waiting4B: {
+            auto selected = ui->labelListWidget->selectedItems();
+            if (selected.empty()) {
+                QMessageBox::warning(this, "No boxes selected", "Select a box first");
+            } else {
+                if (status == Waiting4A) { // 读取到box_a
+                    box_a = ui->label->get_current_label().at(
+                            (dynamic_cast<IndexQListWidgetItem *>(selected.first()))->getIndex());
+                    ui->fileListWidget->setCurrentRow(target_idx + 1); // 自动跳转到下一张
+                    status = Waiting4B;
+                } else {
+                    box_b = ui->label->get_current_label().at(
+                            (dynamic_cast<IndexQListWidgetItem *>(selected.first()))->getIndex());
+                    if (box_a.tag_id == box_b.tag_id && box_a.color_id == box_b.color_id) { // 检测装甲板类型是否相同
+                        box_t result;
+                        result.tag_id = box_a.tag_id;
+                        result.color_id = box_a.color_id;
+                        for (int i = 0; i < 4; ++i) result.pts[i] = box_a.pts[i] / 2 + box_b.pts[i] / 2; // 插值
+                        ui->fileListWidget->setCurrentRow(target_idx);
+                        ui->label->get_current_label().append(result);
+                        ui->label->updateBox();
+                    } else {
+                        QMessageBox::warning(this, "Shouldn't interpolate boxes of different types",
+                                             "Please select boxes of same type");
+                        ui->fileListWidget->setCurrentRow(target_idx);
+                    }
+                    status = Idle;
+                }
+            }
+        }
+            break;
+    }
 }
