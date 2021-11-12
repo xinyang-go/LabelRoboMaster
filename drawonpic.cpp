@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <QClipboard>
+#include <QMimeData>
 
 DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     pen_point_focus.setWidth(5);
@@ -185,23 +187,64 @@ void DrawOnPic::wheelEvent(QWheelEvent* event){
     img2label = img2label * delta_transform;
 }
 
-void DrawOnPic::keyPressEvent(QKeyEvent* event) {
-    switch (event->key())    {
-    case Qt::Key_Escape: // ESC取消选中
-        focus_box_index = -1;
-        update();
-        break;
-    case Qt::Key_Delete: // Delete删除选中
-        if(focus_box_index >= 0){
-            current_label.removeAt(focus_box_index);
+void DrawOnPic::keyPressEvent(QKeyEvent *event) {
+    switch (event->key()) {
+        case Qt::Key_Escape: // ESC取消选中
             focus_box_index = -1;
-            emit labelChanged(current_label);
             update();
-        }
-    default:
-        break;
+            break;
+        case Qt::Key_Delete: // Delete删除选中
+            if (focus_box_index >= 0) {
+                current_label.removeAt(focus_box_index);
+                focus_box_index = -1;
+                emit labelChanged(current_label);
+                update();
+            }
+            break;
+        case Qt::Key_C: // Ctrl+C复制选中
+            if (focus_box_index >= 0 && event->modifiers().testFlag(Qt::ControlModifier)) {
+                auto box_data = QByteArray((char *) &current_label[focus_box_index], sizeof(box_t));
+                auto *mime_data = new QMimeData();
+                mime_data->setData("box_t", box_data);
+                QApplication::clipboard()->setMimeData(mime_data);
+            }
+            break;
+        case Qt::Key_V: // Ctrl+V粘贴前面复制的
+            if (event->modifiers().testFlag(Qt::ControlModifier)) {
+                auto mime_data = QApplication::clipboard()->mimeData();
+                if (mime_data->hasFormat("box_t")) {
+                    auto box_to_paste = *(box_t *) mime_data->data("box_t").data();
+                    current_label.append(box_to_paste);
+                    focus_box_index = current_label.count() - 1;
+                    emit labelChanged(current_label);
+                    update();
+                }
+            }
+            break;
+            // TODO: 使上下键修改高亮与插值装甲板选择兼容兼容
+//        case Qt::Key_Up:
+//            if(current_label.empty()) break;
+//            if(focus_box_index==-1){
+//                focus_box_index = current_label.count() - 1;
+//            } else {
+//                focus_box_index--;
+//                if (focus_box_index < 0) focus_box_index = current_label.count() - 1;
+//            }
+//            update();
+//            break;
+//        case Qt::Key_Down:
+//            if (current_label.empty()) break;
+//            if (focus_box_index == -1) {
+//                focus_box_index = 0;
+//            } else {
+//                focus_box_index++;
+//                if (focus_box_index >= current_label.count()) focus_box_index = 0;
+//            }
+//            update();
+//            break;
+        default:
+            break;
     }
-    
 }
 
 void DrawOnPic::paintEvent(QPaintEvent *) {
