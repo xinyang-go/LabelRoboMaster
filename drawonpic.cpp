@@ -40,7 +40,7 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     small_svg_ploygen.append({0., 516.});
     small_svg_ploygen.append({557., 516.});
     small_svg_ploygen.append({557., 0.});
-    
+
 // 重新测量后的坐标点定义
     // 大装甲标注点对应在svg图中的4个坐标
     big_pts.append({0., 140.61});
@@ -52,7 +52,7 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
     small_pts.append({0., 372.74});
     small_pts.append({557., 372.74});
     small_pts.append({557., 143.26});
-    
+
 // 历史坐标点定义    
 //     // 大装甲标注点对应在svg图中的4个坐标
 //     big_pts.append({11., 141.});
@@ -64,7 +64,7 @@ DrawOnPic::DrawOnPic(QWidget *parent) : QLabel(parent), model() {
 //     small_pts.append({11., 371.});
 //     small_pts.append({546., 371.});
 //     small_pts.append({546., 146.});
-    
+
     // 加载svg图片
     standard_tag_render[0].load(QString(":/pic/tags/resource/G.svg"));
     standard_tag_render[1].load(QString(":/pic/tags/resource/1.svg"));
@@ -108,7 +108,7 @@ void DrawOnPic::mousePressEvent(QMouseEvent *event) {
         update();   // 更新绘图
     } else if (event->button() == Qt::RightButton) {
         // 右键用于图像拖动，记录拖动起点
-        right_drag_pos = pos;   
+        right_drag_pos = pos;
         setNormalMode();
         update();   // 更新绘图
     }
@@ -132,7 +132,7 @@ void DrawOnPic::mouseMoveEvent(QMouseEvent *event) {
     }
 
     // 右键拖动，计算图片移动后的QTransform
-    if(event->buttons() & Qt::RightButton){ 
+    if (event->buttons() & Qt::RightButton) {
         QTransform delta;
         delta.translate(pos.x() - right_drag_pos.x(), pos.y() - right_drag_pos.y());
         img2label = img2label * delta;
@@ -169,7 +169,7 @@ void DrawOnPic::mouseDoubleClickEvent(QMouseEvent *event){
     if(event->button() == Qt::RightButton){
         // 右键双击恢复默认视图
         // 偷懒，使用重新加载图像实现上述功能
-        loadImage(); 
+        loadImage();
     }
 }
 
@@ -177,7 +177,7 @@ void DrawOnPic::wheelEvent(QWheelEvent* event){
     // 滚轮缩放图像，计算缩放后的QTransform
 
     const double delta = (event->delta() > 0) ? (1.1) : (1 / 1.1);
-    
+
     double mx = event->pos().x();
     double my = event->pos().y();
 
@@ -249,7 +249,7 @@ void DrawOnPic::keyPressEvent(QKeyEvent *event) {
 
 void DrawOnPic::paintEvent(QPaintEvent *) {
     if (img == nullptr) return;
-    
+
     // 绘制图片
     QPainter painter(this);
     painter.setTransform(img2label);
@@ -310,7 +310,7 @@ void DrawOnPic::paintEvent(QPaintEvent *) {
         painter.setPen(pen_text);
         painter.drawText(img2label.map(norm2img.map(box.pts[0])), box.getName());
     }
-    
+
     // 绘制鼠标相关
     painter.setTransform(QTransform());
     QPointF *focus = nullptr;
@@ -352,7 +352,7 @@ void DrawOnPic::loadImage() {
     img->load(current_file);
     double ratio = std::min((double) QLabel::geometry().width() / img->width(),
                             (double) QLabel::geometry().height() / img->height());
-    
+
     QPolygonF norm_polygen;
     norm_polygen.append({0., 0.});
     norm_polygen.append({0., 1.});
@@ -372,7 +372,7 @@ void DrawOnPic::loadImage() {
     label_polygen.append({x1, y1 + ratio * img->height()});
     label_polygen.append({x1 + ratio * img->width(), y1 + ratio * img->height()});
     label_polygen.append({x1 + ratio * img->width(), y1});
-    
+
     QTransform::quadToQuad(norm_polygen, image_polygen, norm2img);
     if(!stayPosition) QTransform::quadToQuad(image_polygen, label_polygen, img2label);
 
@@ -484,7 +484,7 @@ void DrawOnPic::saveLabel() {
     QFileInfo image_file = current_file;
     QFileInfo label_file = image_file.absoluteFilePath().replace(image_file.completeSuffix(), "txt");
     QFile fp(label_file.absoluteFilePath());
-    if (current_label.empty()) {    
+    if (current_label.empty()) {
         // 如果当前图片没有任何目标，则删除标签文件。
         // 主要避免之前保存过有目标的文件。
         fp.remove();

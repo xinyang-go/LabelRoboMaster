@@ -17,7 +17,7 @@ public:
     QString model_mode() const { return model.get_mode(); }
 
     void reset();
-    
+
     QVector<box_t> &get_current_label();
 
 protected:

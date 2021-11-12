@@ -38,7 +38,7 @@ void MainWindow::on_openDirectoryPushButton_clicked() {
     ui->fileListWidget->clear();    // 清空文件列表
     int idx = 0;
     // 遍历文件夹下的图片，并添加到文件列表
-    for (QString file : dir.entryList(image_filter)) {
+    for (QString file: dir.entryList(image_filter)) {
         if (file == "." || file == "..") continue;
         ui->fileListWidget->addItem(new IndexQListWidgetItem(dir.absoluteFilePath(file), idx++));
     }
@@ -87,12 +87,13 @@ void MainWindow::on_labelListWidget_currentItemChanged(QListWidgetItem *current,
 
 void MainWindow::on_smartPushButton_clicked() {
     // 进行一次自动标注
-    ui->label->smart();   
+    ui->label->smart();
 }
+
 void MainWindow::on_smartAllPushButton_clicked() {
     // 遍历所有目标，依次进行自动标注
     // TODO: 目前无法中断该过程
-    for(int i = 0; i < ui->fileListWidget->count(); i++){
+    for (int i = 0; i < ui->fileListWidget->count(); i++) {
         ui->fileListWidget->setCurrentRow(i);
         ui->label->smart();
         // ui->label->setCurrentFile(ui->fileListWidget->item(i)->text());
@@ -100,6 +101,7 @@ void MainWindow::on_smartAllPushButton_clicked() {
         QCoreApplication::processEvents();
     }
 }
+
 void MainWindow::on_nextPushButton_clicked() {
     // 切换图片时，判断是否需要自动保存
     if (ui->autoSaveCheckBox->checkState() == Qt::Checked) {
