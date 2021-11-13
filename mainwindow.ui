@@ -32,7 +32,7 @@
       <x>0</x>
       <y>0</y>
       <width>200</width>
-      <height>640</height>
+      <height>720</height>
      </rect>
     </property>
     <property name="title">
@@ -120,7 +120,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>180</y>
+       <y>260</y>
        <width>200</width>
        <height>80</height>
       </rect>
@@ -146,13 +146,13 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>260</y>
+       <y>340</y>
        <width>200</width>
        <height>80</height>
       </rect>
      </property>
      <property name="text">
-      <string>Smart (space)</string>
+      <string>Smart (Space)</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -172,7 +172,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>340</y>
+       <y>420</y>
        <width>200</width>
        <height>80</height>
       </rect>
@@ -195,13 +195,13 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>420</y>
+       <y>500</y>
        <width>200</width>
        <height>80</height>
       </rect>
      </property>
      <property name="text">
-      <string>Next (e)</string>
+      <string>Next (E)</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -221,13 +221,13 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>500</y>
+       <y>580</y>
        <width>200</width>
        <height>80</height>
       </rect>
      </property>
      <property name="text">
-      <string>Prev (q)</string>
+      <string>Prev (Q)</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -247,7 +247,7 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>580</y>
+       <y>663</y>
        <width>100</width>
        <height>25</height>
       </rect>
@@ -260,8 +260,8 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>610</y>
-       <width>100</width>
+       <y>690</y>
+       <width>120</width>
        <height>25</height>
       </rect>
      </property>
