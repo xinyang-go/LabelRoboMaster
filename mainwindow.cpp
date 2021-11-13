@@ -148,13 +148,13 @@ void MainWindow::on_interpolateButton_clicked() {
     switch (status) {
         case Idle:
             target_idx = ui->fileListWidget->currentRow();
-            if (target_idx - 1 < 0 || target_idx + 1 >= ui->fileListWidget->count()) { //考虑到后面实际上可以随意选择插值来源，这个判断可有可无
-                QMessageBox::warning(this, "Invalid interpolate", "Can't interpolate boxes on first or last picture.");
-            } else {
-                if (ui->autoSaveCheckBox->isChecked()) ui->label->saveLabel();
-                ui->fileListWidget->setCurrentRow(target_idx - 1); // 自动跳转到上一张图
-                status = Waiting4A;
-            }
+//            if (target_idx - 1 < 0 || target_idx + 1 >= ui->fileListWidget->count()) { //考虑到后面实际上可以随意选择插值来源，这个判断可有可无
+//                QMessageBox::warning(this, "Invalid interpolate", "Can't interpolate boxes on first or last picture.");
+//            } else {
+            if (ui->autoSaveCheckBox->isChecked()) ui->label->saveLabel();
+            ui->fileListWidget->setCurrentRow(target_idx - 1); // 自动跳转到上一张图
+            status = Waiting4A;
+//            }
             break;
         case Waiting4A:
         case Waiting4B: {
@@ -170,7 +170,7 @@ void MainWindow::on_interpolateButton_clicked() {
                 } else {
                     box_b = ui->label->get_current_label().at(
                             (dynamic_cast<IndexQListWidgetItem *>(selected.first()))->getIndex());
-                    if (box_a.tag_id == box_b.tag_id && box_a.color_id == box_b.color_id) { // 检测装甲板类型是否相同
+                    if (box_a.tag_id == box_b.tag_id) { // 检测装甲板类型是否相同
                         box_t result;
                         result.tag_id = box_a.tag_id;
                         result.color_id = box_a.color_id;
