@@ -96,6 +96,7 @@ private:
     QPointF pos;
 
     QPointF right_drag_pos;
+    QPointF middle_drag_pos;
 
     QPen pen_point_focus;
     QPen pen_point;

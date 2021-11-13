@@ -111,6 +111,10 @@ void DrawOnPic::mousePressEvent(QMouseEvent *event) {
         right_drag_pos = pos;
         setNormalMode();
         update();   // 更新绘图
+    } else if (event->button() == Qt::MiddleButton) {
+        middle_drag_pos = norm2img.inverted().map(img2label.inverted().map(pos));
+        setNormalMode();
+        update();   // 更新绘图
     }
 }
 
@@ -137,6 +141,14 @@ void DrawOnPic::mouseMoveEvent(QMouseEvent *event) {
         delta.translate(pos.x() - right_drag_pos.x(), pos.y() - right_drag_pos.y());
         img2label = img2label * delta;
         right_drag_pos = pos;
+        update();
+    } else if (event->buttons() & Qt::MiddleButton) {
+        if (focus_box_index == -1) return;
+        auto new_pos = norm2img.inverted().map(img2label.inverted().map(pos));
+        for (auto &pt: current_label[focus_box_index].pts) {
+            pt += new_pos - middle_drag_pos;
+        }
+        middle_drag_pos = new_pos;
         update();
     }
 }
