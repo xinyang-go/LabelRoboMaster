@@ -40,6 +40,10 @@ private slots:
 
     void on_prevPushButton_clicked();
 
+    void on_upLabelButton_clicked();
+
+    void on_downLabelButton_clicked();
+
     void on_fileListHorizontalSlider_valueChanged(int value);
 
     void on_fileListHorizontalSlider_rangeChanged(int min, int max);

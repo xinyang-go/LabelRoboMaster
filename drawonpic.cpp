@@ -233,27 +233,6 @@ void DrawOnPic::keyPressEvent(QKeyEvent *event) {
                 }
             }
             break;
-            // TODO: 使上下键修改高亮与插值装甲板选择兼容兼容
-//        case Qt::Key_Up:
-//            if(current_label.empty()) break;
-//            if(focus_box_index==-1){
-//                focus_box_index = current_label.count() - 1;
-//            } else {
-//                focus_box_index--;
-//                if (focus_box_index < 0) focus_box_index = current_label.count() - 1;
-//            }
-//            update();
-//            break;
-//        case Qt::Key_Down:
-//            if (current_label.empty()) break;
-//            if (focus_box_index == -1) {
-//                focus_box_index = 0;
-//            } else {
-//                focus_box_index++;
-//                if (focus_box_index >= current_label.count()) focus_box_index = 0;
-//            }
-//            update();
-//            break;
         default:
             break;
     }

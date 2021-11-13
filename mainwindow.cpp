@@ -190,3 +190,13 @@ void MainWindow::on_interpolateButton_clicked() {
             break;
     }
 }
+
+void MainWindow::on_upLabelButton_clicked() {
+    int prev_idx = ui->labelListWidget->currentRow() - 1;
+    ui->labelListWidget->setCurrentRow(prev_idx >= 0 ? prev_idx : ui->labelListWidget->count() - 1);
+}
+
+void MainWindow::on_downLabelButton_clicked() {
+    int next_idx = ui->labelListWidget->currentRow() + 1;
+    ui->labelListWidget->setCurrentRow(next_idx < ui->labelListWidget->count() ? next_idx : 0);
+}
