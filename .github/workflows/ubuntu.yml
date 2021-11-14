@@ -61,8 +61,7 @@ jobs:
           chmod +x linuxdeploy*.AppImage
           export QML_SOURCES_PATHS=".."
           mkdir ./AppDir/usr/lib -p
-          sudo cp -f /opt/intel/openvino_2021/inference_engine/lib/intel64/{*.so,plugins.xml} ./AppDir/usr/lib/
-          rm ./AppDir/usr/lib/libHDDLPlugin.so
+          sudo cp -f /opt/intel/openvino_2021/inference_engine/lib/intel64/{libinference_engine*.so,libMKLDNNPlugin.so,plugins.xml} ./AppDir/usr/lib/
           ./linuxdeploy-x86_64.AppImage --appdir AppDir -eLabelRoboMaster --create-desktop-file -i../scripts/LabelRoboMaster.png --plugin qt --output appimage
       - uses: actions/upload-artifact@v2
         with:
