@@ -32,7 +32,7 @@
       <x>0</x>
       <y>0</y>
       <width>200</width>
-      <height>640</height>
+      <height>720</height>
      </rect>
     </property>
     <property name="title">
@@ -116,7 +116,7 @@
       <string>A</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="smartPushButton">
+    <widget class="QPushButton" name="interpolateButton">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -126,7 +126,33 @@
       </rect>
      </property>
      <property name="text">
-      <string>Smart (space)</string>
+      <string>Interpolate (I)</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/icon/resource/auto-fix.png</normaloff>:/icon/resource/auto-fix.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="shortcut">
+      <string>I</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="smartPushButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>340</y>
+       <width>200</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Smart (Space)</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -146,7 +172,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>340</y>
+       <y>420</y>
        <width>200</width>
        <height>80</height>
       </rect>
@@ -169,13 +195,13 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>420</y>
+       <y>500</y>
        <width>200</width>
        <height>80</height>
       </rect>
      </property>
      <property name="text">
-      <string>Next (e)</string>
+      <string>Next (E)</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -195,13 +221,13 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>500</y>
+       <y>580</y>
        <width>200</width>
        <height>80</height>
       </rect>
      </property>
      <property name="text">
-      <string>Prev (q)</string>
+      <string>Prev (Q)</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -221,13 +247,26 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>590</y>
-       <width>100</width>
+       <y>663</y>
+       <width>150</width>
        <height>25</height>
       </rect>
      </property>
      <property name="text">
       <string>Auto Save</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="stayPositionCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>690</y>
+       <width>150</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stay Position</string>
      </property>
     </widget>
    </widget>
@@ -243,7 +282,7 @@
     <property name="title">
      <string>LabelList (双击修改类别或删除)</string>
     </property>
-    <widget class="QListWidget" name="labelListWidget">
+    <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -252,6 +291,50 @@
        <height>280</height>
       </rect>
      </property>
+     <layout class="QVBoxLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QListWidget" name="labelListWidget"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="upLabelButton">
+          <property name="text">
+           <string>↑ (W)</string>
+          </property>
+          <property name="shortcut">
+           <string>W</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="downLabelButton">
+          <property name="text">
+           <string>↓ (S)</string>
+          </property>
+          <property name="shortcut">
+           <string>S</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
@@ -310,19 +393,6 @@
       <y>0</y>
       <width>1000</width>
       <height>800</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>640</y>
-      <width>200</width>
-      <height>140</height>
      </rect>
     </property>
     <property name="text">

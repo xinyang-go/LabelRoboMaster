@@ -30,6 +30,8 @@ private slots:
 
     void on_labelListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
+    void on_interpolateButton_clicked();
+
     void on_smartPushButton_clicked();
 
     void on_smartAllPushButton_clicked();
@@ -37,6 +39,10 @@ private slots:
     void on_nextPushButton_clicked();
 
     void on_prevPushButton_clicked();
+
+    void on_upLabelButton_clicked();
+
+    void on_downLabelButton_clicked();
 
     void on_fileListHorizontalSlider_valueChanged(int value);
 
